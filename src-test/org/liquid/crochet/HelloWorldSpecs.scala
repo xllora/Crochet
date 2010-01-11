@@ -1,5 +1,6 @@
 package org.liquid.crochet
 
+import scala.concurrent.ops.spawn
 import org.specs.Specification
 
 /**
@@ -7,30 +8,58 @@ import org.specs.Specification
  *
  * @author Xavier Llora
  * @date Jan 9, 2010 at 9:12:58 PM
- * 
+ *
  */
 
 object HelloWorldSpecs extends Specification {
+
+  protected val TEST_PORT = 8080
 
   "A simple Hello World! example " should {
 
     "Return Hello World!" in {
 
-      class HelloWorld extends CrochetServlet {
-
-        // TODO Figure out how to specify mime type of the response
+      val hwc = new CrochetServlet {
         get("/msg") {
-          response.getWriter.println("Hello World")
+          <html>
+            <head>
+              <title>Hello World!</title>
+            </head>
+            <body>
+              <b>Hello World!</b>
+            </body>
+          </html>
         }
 
-
-        get("""/([0-9]+/?)+""".r) {
-          elements.foldLeft(0)(_+_)
+        get("/msg/text", {header("Accept").contains("text/plain")}) {
+          "Hello World!"
         }
+
+        get("/msg/html", "text/html") {
+          <html>
+            <head>
+              <title>Hello World!</title>
+            </head>
+            <body>
+              <b>Hello World!</b>
+            </body>
+          </html>
+        }
+
+        get("/msg/text/guard", "text/html", {header("Accept").contains("text/plain")}) {
+          "Hello World!"
+        }
+
+        _404 { () => path+" not found" }
 
       }
-      
-      true must beTrue
+
+      val client = NetUtils("http","localhost",TEST_PORT)
+      val server = new CrochetServer(TEST_PORT,hwc)
+      spawn { server.go }
+      Thread.sleep(500)
+      println(client get "/msg")
+      server.stop
     }
   }
 
