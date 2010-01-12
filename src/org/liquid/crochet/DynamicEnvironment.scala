@@ -23,9 +23,8 @@ trait DynamicEnvironment {
    protected val responseVal = new DynamicVariable[HttpServletResponse](null)
    protected val   headerVal = new DynamicVariable[Map[String,String]](null)
    protected val    paramVal = new DynamicVariable[Map[String,String]](null)
-   protected val paramMapVal = new DynamicVariable[Map[String,Array[Any]]](null)
+   protected val paramMapVal = new DynamicVariable[Map[String,Array[String]]](null)
    protected val elementsVal = new DynamicVariable[List[String]](null)
-   protected val  messageVal = new DynamicVariable[Map[String,String]](null)
 
    //
    // Exposed names of the dynamic variables
@@ -37,7 +36,6 @@ trait DynamicEnvironment {
    def    params = paramVal.value
    def paramsMap = paramMapVal.value
    def  elements = elementsVal.value
-   def   message = messageVal.value
  
 
 }

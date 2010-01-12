@@ -17,7 +17,7 @@ import util.matching.Regex
 abstract class CrochetServlet extends HttpServlet with DynamicEnvironment with ResponseCodes {
 
   //
-  // The main structure used as dispatcher
+  // The main structures used as dispatchers
   //
   protected var dispatcherMap = MMap[String,MMap[String,(()=>String,()=>Boolean,()=>Any)]]()
   dispatcherMap ++ List(
@@ -26,10 +26,21 @@ abstract class CrochetServlet extends HttpServlet with DynamicEnvironment with R
     "PUT"     -> MMap[String, (() => String, () => Boolean, () => Any)](),
     "DELETE"  -> MMap[String, (() => String, () => Boolean, () => Any)](),
     "HEAD"    -> MMap[String, (() => String, () => Boolean, () => Any)](),
-    "OPTION" -> MMap[String, (() => String, () => Boolean, () => Any)](),
+    "OPTION"  -> MMap[String, (() => String, () => Boolean, () => Any)](),
     "TRACE"   -> MMap[String, (() => String, () => Boolean, () => Any)]()
     )
 
+  protected var dispatcherRegexMap = MMap[String,List[(Regex,()=>String,()=>Boolean,()=>Any)]]()
+  dispatcherRegexMap ++ List(
+    "GET"     -> List[(Regex, () => String, () => Boolean, () => Any)](),
+    "POST"    -> List[(Regex, () => String, () => Boolean, () => Any)](),
+    "PUT"     -> List[(Regex, () => String, () => Boolean, () => Any)](),
+    "DELETE"  -> List[(Regex, () => String, () => Boolean, () => Any)](),
+    "HEAD"    -> List[(Regex, () => String, () => Boolean, () => Any)](),
+    "OPTION"  -> List[(Regex, () => String, () => Boolean, () => Any)](),
+    "TRACE"   -> List[(Regex, () => String, () => Boolean, () => Any)]()
+    )
+  
   //
   // Implicit casting
   //
@@ -39,27 +50,88 @@ abstract class CrochetServlet extends HttpServlet with DynamicEnvironment with R
   protected implicit def stringToDouble (s:String) = Double  parseDouble s
   protected implicit def stringToUUID   (s:String) = UUID    fromString  s
 
+  private def extractHeaderMap(request:HttpServletRequest) = {
+    val nameEnum = request.getHeaderNames
+    var map = Map[String,String]()
+    while ( nameEnum.hasMoreElements ) {
+      val key = nameEnum.nextElement.toString
+      map += key->request.getHeader(key)
+    }
+    map
+  }
+
+  private def extractParameters(request:HttpServletRequest) = {
+    val     names = request.getParameterNames
+    var mapSingle = Map[String,String]()
+    var  mapArray = Map[String,Array[String]]()
+    while (names.hasMoreElements) {
+      val key = names.nextElement.toString
+      mapSingle += key->request.getParameter(key)
+      mapArray  += key->request.getParameterValues(key)
+    }
+    (mapSingle,mapArray)
+  }
 
   override def service(request: HttpServletRequest, response: HttpServletResponse) = {
-    val  method = request.getMethod
-    val pathURI = request.getRequestURI
+    val    method = request.getMethod
+    val   pathURI = request.getRequestURI
+    val headerMap = extractHeaderMap(request)
+    val   (ms,ma) = extractParameters(request)
 
     try {
       pathVal.withValue(pathURI) {
         requestVal.withValue(request) {
           responseVal.withValue(response) {
-            messageVal.withValue(Map[String, String]()) {
-              headerVal.withValue(Map[String, String]()) {
-                paramVal.withValue(Map[String, String]()) {
-                  paramMapVal.withValue(Map[String, Array[Any]]()) {
+            headerVal.withValue(headerMap) {
+              paramVal.withValue(ms) {
+                paramMapVal.withValue(ma) {
+                  //
+                  // Check if it a regular path.
+                  //
+                  if (dispatcherMap(method) contains pathURI)
                     elementsVal.withValue(List[String]()) {
-                      val action = dispatcherMap(method)(pathURI)
-                      val mime = action._1
-                      val guard = action._2
-                      val function = action._3
-                      response.setStatus(HttpServletResponse.SC_OK)
-                      response.setContentType(mime())
-                      response.getWriter.println(function().toString)
+                      val (mime, guard, function) = dispatcherMap(method)(pathURI)
+                      if (guard()) {
+                        // Found and guard satisfied
+                        response.setStatus(HttpServletResponse.SC_OK)
+                        response.setContentType(mime())
+                        response.getWriter.print(function().toString)
+                      }
+                      else {
+                        // Found and guard not satisfied
+                        guardViolation(path,request,response)
+                      }
+                    }
+                    else {
+                      //
+                      // May be on the regular expression pool
+                      //
+                      val   list = dispatcherRegexMap(method)
+                      val target = list.find(
+                            (t:Tuple4[Regex,()=>String,()=>Boolean,()=>Any])=> {
+                              val r = t._1
+                              pathURI match {
+                                case r(_) => true
+                                case _    => false
+                              }
+                            }
+                      )
+                      target match {
+                         case Some(t) if  t._3() => // Matched and guard satisfied
+                                                    elementsVal.withValue(extractMatches(pathURI,t._1)) {
+                                                      response setStatus HttpServletResponse.SC_OK
+                                                      response setContentType t._2()
+                                                      response.getWriter.print(t._4().toString)
+                                                    }
+                         case Some(t) if !t._3() => // Guard not satisfied
+                                                    elementsVal.withValue(List[String]()) {
+                                                      guardViolation(path,request,response)
+                                                    }
+                         case _ => // Request could not be found either way
+                                   elementsVal.withValue(List[String]()) {
+                                     requestNotFound(path,request,response)
+                                   }
+
                     }
                   }
                 }
@@ -70,37 +142,60 @@ abstract class CrochetServlet extends HttpServlet with DynamicEnvironment with R
       }
     }
     catch {
-      case ex: NoSuchElementException => response.getWriter.println("requesting " + request.getMethod + " " + request.getRequestURI + " but only have "
-              + Map)
+      case ex: NoSuchElementException =>  response.getWriter.println("requesting " + request.getMethod + " " + request.getRequestURI + " but only have "+ Map)
+      case s => response.getWriter.println("Something whent wrong "+s.toString)
     }
   }
 
-  //  override def doGet (request:HttpServletRequest, response:HttpServletResponse) = {}
-//  override def doDelete (request:HttpServletRequest, response:HttpServletResponse) = {}
-//  override def doHead  (request:HttpServletRequest, response:HttpServletResponse) = {}
-//  override def doOptions  (request:HttpServletRequest, response:HttpServletResponse) = {}
-//  override def doPost (request:HttpServletRequest, response:HttpServletResponse) = {}
-//  override def doPut (request:HttpServletRequest, response:HttpServletResponse) = {}
-//  override def doTrace (request:HttpServletRequest, response:HttpServletResponse) = {}
+  def extractMatches(pathURI:String,r:Regex):List[String] = {
+    r.unapplySeq(pathURI) match {
+      case Some(l) => l
+      case None    => List[String]()
+    }
+  }
+
+  def guardViolation(path: String, request: HttpServletRequest, response: HttpServletResponse) = {
+    response setStatus HttpServletResponse.SC_EXPECTATION_FAILED
+    response setContentType "text/html"
+    val message = errorCodeMap(HttpServletResponse.SC_EXPECTATION_FAILED)()
+    val  output = _error_template(Map("msg" -> message))
+    response.getWriter.print(output)
+  }
 
 
-  def get ( path:String )(fun: => Any ) =
-    dispatcherMap("GET")+(path->(()=>"text/html",()=>true,()=>fun))
+  def requestNotFound(path: String, request: HttpServletRequest, response: HttpServletResponse) = {
+    response setStatus HttpServletResponse.SC_NOT_FOUND
+    response setContentType "text/html"
+    val message = errorCodeMap(HttpServletResponse.SC_NOT_FOUND)()
+    val  output = _error_template(Map("msg" -> message))
+    response.getWriter.print(output)
+  }
 
-  def get ( path:String, mimeType:String )(fun: => Any ) =
-    dispatcherMap("GET")+(path->(()=>mimeType,()=>true,()=>fun))
 
-  def get ( path:String, guard: =>Boolean )(fun: => Any ) =
-    dispatcherMap("GET")+(path->(()=>"text/html",()=>guard,()=>fun))
+  def get(path: String)(fun: => Any) =
+    dispatcherMap("GET") + (path -> (() => "text/html", () => true, () => fun))
 
-  def get ( path:String, mimeType:String, guard: =>Boolean )(fun: => Any ) =
-    dispatcherMap("GET")+(path->(()=>mimeType,()=>guard,()=>fun))
+  def get(path: String, mimeType: String)(fun: => Any) =
+    dispatcherMap("GET") + (path -> (() => mimeType, () => true, () => fun))
 
-  def get ( path:Regex )(fun: => Any ) = {}
-  def get ( path:Regex, mimeType:String )(fun: => Any ) = {}
-  def get ( path:Regex, guard: =>Boolean )(fun: => Any ) = {}
-  def get ( path:Regex, mimeType:String, guard: =>Boolean )(fun: => Any ) = {}
+  def get(path: String, guard: => Boolean)(fun: => Any) =
+    dispatcherMap("GET") + (path -> (() => "text/html", () => guard, () => fun))
 
+  def get(path: String, mimeType: String, guard: => Boolean)(fun: => Any) =
+    dispatcherMap("GET") + (path -> (() => mimeType, () => guard, () => fun))
+
+
+  def get(re: Regex)(fun: => Any) =
+    dispatcherRegexMap("GET") = dispatcherRegexMap("GET") ::: List((re, () => "text/html", () => true, () => fun))
+
+  def get(re: Regex, mimeType: String)(fun: => Any) =
+    dispatcherRegexMap("GET") = dispatcherRegexMap("GET") ::: List((re, () => mimeType, () => true, () => fun))
+
+  def get(re: Regex, guard: => Boolean)(fun: => Any) =
+    dispatcherRegexMap("GET") = dispatcherRegexMap("GET") ::: List((re, () => "text/html", () => guard, () => fun))
+
+  def get(re: Regex, mimeType: String, guard: => Boolean)(fun: => Any) =
+    dispatcherRegexMap("GET") = dispatcherRegexMap("GET") ::: List((re, () => mimeType, () => guard, () => fun))
 
 
 }

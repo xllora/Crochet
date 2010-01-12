@@ -21,8 +21,7 @@ object NetUtils {
       val hc = new HttpClient
       val mt = new GetMethod(baseURL+path)
       hc executeMethod mt match {
-        case HttpStatus.SC_OK => new String(mt.getResponseBody)
-        case _ => ""
+        case sc => (sc,new String(mt.getResponseBody))
       }
     }
 

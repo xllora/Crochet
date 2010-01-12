@@ -1,6 +1,6 @@
 package org.liquid.crochet
 
-import scala.collection.mutable.Map
+import scala.collection.mutable.{Map=>MMap}
 import java.util.Date
 import javax.servlet.http.HttpServletResponse
 
@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletResponse
 
 trait ResponseCodes extends DynamicEnvironment {
 
-  protected def _default_error_template =
+  protected def _default_error_template(map:Map[String,String]) =
     <html>
       <head>
       </head>
@@ -22,6 +22,7 @@ trait ResponseCodes extends DynamicEnvironment {
         <br/>
         <br/>
         <br/>
+        <h3>{map("msg")}</h3>
         <br/>
         <br/>
         <br/>
@@ -33,10 +34,16 @@ trait ResponseCodes extends DynamicEnvironment {
     </html>
   
 
-  protected var _error_template = _default_error_template
+  protected var _error_template = _default_error_template _
 
-  protected val errorCodeMap = Map[Int,()=>String]()
+  protected val errorCodeMap = MMap[Int,()=>String]()
 
   def _404(msg: () => String) = errorCodeMap + (HttpServletResponse.SC_NOT_FOUND->msg)
+  def _417(msg: () => String) = errorCodeMap + (HttpServletResponse.SC_EXPECTATION_FAILED->msg)
 
+  //
+  // Default response codes
+  //
+  _404 { () => path+" not found" }
+  _417 { () => "Guard to "+path+" failed" }
 }

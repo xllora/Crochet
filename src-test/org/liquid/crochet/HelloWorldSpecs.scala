@@ -2,6 +2,9 @@ package org.liquid.crochet
 
 import scala.concurrent.ops.spawn
 import org.specs.Specification
+import java.io.StringReader
+import scala.xml.XML
+
 
 /**
  * A basic simple specs for a Hello World! example
@@ -20,37 +23,52 @@ object HelloWorldSpecs extends Specification {
     "Return Hello World!" in {
 
       val hwc = new CrochetServlet {
-        get("/msg") {
-          <html>
-            <head>
-              <title>Hello World!</title>
-            </head>
-            <body>
-              <b>Hello World!</b>
-            </body>
-          </html>
-        }
 
-        get("/msg/text", {header("Accept").contains("text/plain")}) {
-          "Hello World!"
+        val helloWordXHTML = <html>
+          <head>
+            <title>Hello World!</title>
+          </head>
+          <body>
+            <b>Hello World!</b>
+          </body>
+        </html>
+
+        val helloWorldText = "Hello World!"
+
+        get("/msg") {
+           helloWordXHTML
         }
 
         get("/msg/html", "text/html") {
-          <html>
-            <head>
-              <title>Hello World!</title>
-            </head>
-            <body>
-              <b>Hello World!</b>
-            </body>
-          </html>
+          helloWordXHTML
         }
 
-        get("/msg/text/guard", "text/html", {header("Accept").contains("text/plain")}) {
-          "Hello World!"
+        get("/msg/text", {header("Host")=="localhost:"+TEST_PORT} ) {
+          helloWorldText
+        }
+
+        get("/msg/text/guard", "text/plain", {header("Host")=="localhost:"+TEST_PORT}) {
+          helloWorldText
+        }
+
+        get("/re/msg".r) {
+           helloWordXHTML
+        }
+
+        get("/re/msg/html".r, "text/html") {
+          helloWordXHTML
+        }
+
+        get("/re/msg/text".r, {header("Accept").contains("text/plain")}) {
+          helloWorldText
+        }
+
+        get("/re/msg/text/guard".r, "text/html", {header("Accept").contains("text/plain")}) {
+          helloWorldText
         }
 
         _404 { () => path+" not found" }
+        _417 { () => "Guard to "+path+" failed" }
 
       }
 
@@ -58,7 +76,11 @@ object HelloWorldSpecs extends Specification {
       val server = new CrochetServer(TEST_PORT,hwc)
       spawn { server.go }
       Thread.sleep(500)
-      println(client get "/msg")
+      XML.load(new StringReader(client.get("/msg")._2)) must be equalTo(hwc.helloWordXHTML)
+      XML.load(new StringReader(client.get("/msg/html")._2)) must be equalTo(hwc.helloWordXHTML)
+      client.get("/msg/text")._2 must be equalTo(hwc.helloWorldText)
+      client.get("/msg/text/guard")._2 must be equalTo(hwc.helloWorldText)
+      // TODO Test the regular expression based ones
       server.stop
     }
   }
