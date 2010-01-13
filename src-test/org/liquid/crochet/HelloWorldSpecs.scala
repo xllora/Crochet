@@ -51,20 +51,24 @@ object HelloWorldSpecs extends Specification {
           helloWorldText
         }
 
-        get("/re/msg".r) {
+        get("^/re/msg$".r) {
            helloWordXHTML
         }
 
-        get("/re/msg/html".r, "text/html") {
+        get("^/re/msg/html$".r, "text/html") {
           helloWordXHTML
         }
 
-        get("/re/msg/text".r, {header("Accept").contains("text/plain")}) {
+        get("^/re/msg/text$".r, {header("Host")=="localhost:"+TEST_PORT}) {
           helloWorldText
         }
 
-        get("/re/msg/text/guard".r, "text/html", {header("Accept").contains("text/plain")}) {
+        get("^/re/msg/text/guard$".r, "text/html", {header("Host")=="localhost:"+TEST_PORT}) {
           helloWorldText
+        }
+                              
+        get("^/echo/([0-9]+)$".r, "text/plain", {elements.size==1} ) {
+          elements(0)
         }
 
         _404 { () => path+" not found" }
@@ -76,11 +80,21 @@ object HelloWorldSpecs extends Specification {
       val server = new CrochetServer(TEST_PORT,hwc)
       spawn { server.go }
       Thread.sleep(500)
+      //
+      // Basic tests for fixed paths
+      //
       XML.load(new StringReader(client.get("/msg")._2)) must be equalTo(hwc.helloWordXHTML)
       XML.load(new StringReader(client.get("/msg/html")._2)) must be equalTo(hwc.helloWordXHTML)
       client.get("/msg/text")._2 must be equalTo(hwc.helloWorldText)
       client.get("/msg/text/guard")._2 must be equalTo(hwc.helloWorldText)
-      // TODO Test the regular expression based ones
+      //
+      // Basic tests for regex paths
+      //
+      XML.load(new StringReader(client.get("/re/msg")._2)) must be equalTo(hwc.helloWordXHTML)
+      XML.load(new StringReader(client.get("/re/msg/html")._2)) must be equalTo(hwc.helloWordXHTML)
+      client.get("/re/msg/text")._2 must be equalTo(hwc.helloWorldText)
+      client.get("/re/msg/text/guard")._2 must be equalTo(hwc.helloWorldText)
+      client.get("/echo/123")._2 must be equalTo("123")
       server.stop
     }
   }

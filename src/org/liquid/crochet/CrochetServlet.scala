@@ -1,6 +1,5 @@
 package org.liquid.crochet
 
-import scala.collection.mutable.{Map=>MMap}
 import java.lang.{Long,Float,Double}
 import java.util.UUID
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse, HttpServlet}
@@ -14,32 +13,7 @@ import util.matching.Regex
  * 
  */
 
-abstract class CrochetServlet extends HttpServlet with DynamicEnvironment with ResponseCodes {
-
-  //
-  // The main structures used as dispatchers
-  //
-  protected var dispatcherMap = MMap[String,MMap[String,(()=>String,()=>Boolean,()=>Any)]]()
-  dispatcherMap ++ List(
-    "GET"     -> MMap[String, (() => String, () => Boolean, () => Any)](),
-    "POST"    -> MMap[String, (() => String, () => Boolean, () => Any)](),
-    "PUT"     -> MMap[String, (() => String, () => Boolean, () => Any)](),
-    "DELETE"  -> MMap[String, (() => String, () => Boolean, () => Any)](),
-    "HEAD"    -> MMap[String, (() => String, () => Boolean, () => Any)](),
-    "OPTION"  -> MMap[String, (() => String, () => Boolean, () => Any)](),
-    "TRACE"   -> MMap[String, (() => String, () => Boolean, () => Any)]()
-    )
-
-  protected var dispatcherRegexMap = MMap[String,List[(Regex,()=>String,()=>Boolean,()=>Any)]]()
-  dispatcherRegexMap ++ List(
-    "GET"     -> List[(Regex, () => String, () => Boolean, () => Any)](),
-    "POST"    -> List[(Regex, () => String, () => Boolean, () => Any)](),
-    "PUT"     -> List[(Regex, () => String, () => Boolean, () => Any)](),
-    "DELETE"  -> List[(Regex, () => String, () => Boolean, () => Any)](),
-    "HEAD"    -> List[(Regex, () => String, () => Boolean, () => Any)](),
-    "OPTION"  -> List[(Regex, () => String, () => Boolean, () => Any)](),
-    "TRACE"   -> List[(Regex, () => String, () => Boolean, () => Any)]()
-    )
+abstract class CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResponseCodes {
   
   //
   // Implicit casting
@@ -49,129 +23,44 @@ abstract class CrochetServlet extends HttpServlet with DynamicEnvironment with R
   protected implicit def stringToFloat  (s:String) = Float   parseFloat  s
   protected implicit def stringToDouble (s:String) = Double  parseDouble s
   protected implicit def stringToUUID   (s:String) = UUID    fromString  s
-
-  private def extractHeaderMap(request:HttpServletRequest) = {
-    val nameEnum = request.getHeaderNames
-    var map = Map[String,String]()
-    while ( nameEnum.hasMoreElements ) {
-      val key = nameEnum.nextElement.toString
-      map += key->request.getHeader(key)
-    }
-    map
-  }
-
-  private def extractParameters(request:HttpServletRequest) = {
-    val     names = request.getParameterNames
-    var mapSingle = Map[String,String]()
-    var  mapArray = Map[String,Array[String]]()
-    while (names.hasMoreElements) {
-      val key = names.nextElement.toString
-      mapSingle += key->request.getParameter(key)
-      mapArray  += key->request.getParameterValues(key)
-    }
-    (mapSingle,mapArray)
-  }
-
-  override def service(request: HttpServletRequest, response: HttpServletResponse) = {
-    val    method = request.getMethod
-    val   pathURI = request.getRequestURI
-    val headerMap = extractHeaderMap(request)
-    val   (ms,ma) = extractParameters(request)
-
-    try {
-      pathVal.withValue(pathURI) {
-        requestVal.withValue(request) {
-          responseVal.withValue(response) {
-            headerVal.withValue(headerMap) {
-              paramVal.withValue(ms) {
-                paramMapVal.withValue(ma) {
-                  //
-                  // Check if it a regular path.
-                  //
-                  if (dispatcherMap(method) contains pathURI)
-                    elementsVal.withValue(List[String]()) {
-                      val (mime, guard, function) = dispatcherMap(method)(pathURI)
-                      if (guard()) {
-                        // Found and guard satisfied
-                        response.setStatus(HttpServletResponse.SC_OK)
-                        response.setContentType(mime())
-                        response.getWriter.print(function().toString)
-                      }
-                      else {
-                        // Found and guard not satisfied
-                        guardViolation(path,request,response)
-                      }
-                    }
-                    else {
-                      //
-                      // May be on the regular expression pool
-                      //
-                      val   list = dispatcherRegexMap(method)
-                      val target = list.find(
-                            (t:Tuple4[Regex,()=>String,()=>Boolean,()=>Any])=> {
-                              val r = t._1
-                              pathURI match {
-                                case r(_) => true
-                                case _    => false
-                              }
-                            }
-                      )
-                      target match {
-                         case Some(t) if  t._3() => // Matched and guard satisfied
-                                                    elementsVal.withValue(extractMatches(pathURI,t._1)) {
-                                                      response setStatus HttpServletResponse.SC_OK
-                                                      response setContentType t._2()
-                                                      response.getWriter.print(t._4().toString)
-                                                    }
-                         case Some(t) if !t._3() => // Guard not satisfied
-                                                    elementsVal.withValue(List[String]()) {
-                                                      guardViolation(path,request,response)
-                                                    }
-                         case _ => // Request could not be found either way
-                                   elementsVal.withValue(List[String]()) {
-                                     requestNotFound(path,request,response)
-                                   }
-
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    catch {
-      case ex: NoSuchElementException =>  response.getWriter.println("requesting " + request.getMethod + " " + request.getRequestURI + " but only have "+ Map)
-      case s => response.getWriter.println("Something whent wrong "+s.toString)
-    }
-  }
-
-  def extractMatches(pathURI:String,r:Regex):List[String] = {
-    r.unapplySeq(pathURI) match {
-      case Some(l) => l
-      case None    => List[String]()
-    }
-  }
-
+  
+  //
+  // The guard was violated
+  //
   def guardViolation(path: String, request: HttpServletRequest, response: HttpServletResponse) = {
-    response setStatus HttpServletResponse.SC_EXPECTATION_FAILED
-    response setContentType "text/html"
-    val message = errorCodeMap(HttpServletResponse.SC_EXPECTATION_FAILED)()
-    val  output = _error_template(Map("msg" -> message))
-    response.getWriter.print(output)
+    reportError(
+        HttpServletResponse.SC_BAD_REQUEST,
+        ()=> "Guard violation on " + path,
+        path, request, response, None
+    )
   }
 
+  //
+  // Internal server error thrown while processing the request
+  //
+  def internalServerError(path: String, request: HttpServletRequest, response: HttpServletResponse, e: Throwable) = {
+    reportError(
+        HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+        ()=> "Internal server error on "+path,
+        path, request, response, Some(e)
+    )
+  }
 
+  //
+  // The requested path could not be found
+  //
   def requestNotFound(path: String, request: HttpServletRequest, response: HttpServletResponse) = {
-    response setStatus HttpServletResponse.SC_NOT_FOUND
-    response setContentType "text/html"
-    val message = errorCodeMap(HttpServletResponse.SC_NOT_FOUND)()
-    val  output = _error_template(Map("msg" -> message))
-    response.getWriter.print(output)
+    reportError(
+        HttpServletResponse.SC_NOT_FOUND,
+        ()=> "Not found: "+path,
+        path, request, response, None
+    )
   }
 
 
+  //
+  // GET methods
+  //
   def get(path: String)(fun: => Any) =
     dispatcherMap("GET") + (path -> (() => "text/html", () => true, () => fun))
 
@@ -196,6 +85,180 @@ abstract class CrochetServlet extends HttpServlet with DynamicEnvironment with R
 
   def get(re: Regex, mimeType: String, guard: => Boolean)(fun: => Any) =
     dispatcherRegexMap("GET") = dispatcherRegexMap("GET") ::: List((re, () => mimeType, () => guard, () => fun))
+
+
+  //
+  // POST methods
+  //
+  def post(path: String)(fun: => Any) =
+    dispatcherMap("POST") + (path -> (() => "text/html", () => true, () => fun))
+
+  def post(path: String, mimeType: String)(fun: => Any) =
+    dispatcherMap("POST") + (path -> (() => mimeType, () => true, () => fun))
+
+  def post(path: String, guard: => Boolean)(fun: => Any) =
+    dispatcherMap("POST") + (path -> (() => "text/html", () => guard, () => fun))
+
+  def post(path: String, mimeType: String, guard: => Boolean)(fun: => Any) =
+    dispatcherMap("POST") + (path -> (() => mimeType, () => guard, () => fun))
+
+
+  def post(re: Regex)(fun: => Any) =
+    dispatcherRegexMap("POST") = dispatcherRegexMap("POST") ::: List((re, () => "text/html", () => true, () => fun))
+
+  def post(re: Regex, mimeType: String)(fun: => Any) =
+    dispatcherRegexMap("POST") = dispatcherRegexMap("POST") ::: List((re, () => mimeType, () => true, () => fun))
+
+  def post(re: Regex, guard: => Boolean)(fun: => Any) =
+    dispatcherRegexMap("POST") = dispatcherRegexMap("POST") ::: List((re, () => "text/html", () => guard, () => fun))
+
+  def post(re: Regex, mimeType: String, guard: => Boolean)(fun: => Any) =
+    dispatcherRegexMap("POST") = dispatcherRegexMap("POST") ::: List((re, () => mimeType, () => guard, () => fun))
+
+
+  //
+  // PUT methods
+  //
+  def put(path: String)(fun: => Any) =
+    dispatcherMap("PUT") + (path -> (() => "text/html", () => true, () => fun))
+
+  def put(path: String, mimeType: String)(fun: => Any) =
+    dispatcherMap("PUT") + (path -> (() => mimeType, () => true, () => fun))
+
+  def put(path: String, guard: => Boolean)(fun: => Any) =
+    dispatcherMap("PUT") + (path -> (() => "text/html", () => guard, () => fun))
+
+  def put(path: String, mimeType: String, guard: => Boolean)(fun: => Any) =
+    dispatcherMap("PUT") + (path -> (() => mimeType, () => guard, () => fun))
+
+
+  def put(re: Regex)(fun: => Any) =
+    dispatcherRegexMap("PUT") = dispatcherRegexMap("PUT") ::: List((re, () => "text/html", () => true, () => fun))
+
+  def put(re: Regex, mimeType: String)(fun: => Any) =
+    dispatcherRegexMap("PUT") = dispatcherRegexMap("PUT") ::: List((re, () => mimeType, () => true, () => fun))
+
+  def put(re: Regex, guard: => Boolean)(fun: => Any) =
+    dispatcherRegexMap("PUT") = dispatcherRegexMap("PUT") ::: List((re, () => "text/html", () => guard, () => fun))
+
+  def put(re: Regex, mimeType: String, guard: => Boolean)(fun: => Any) =
+    dispatcherRegexMap("PUT") = dispatcherRegexMap("PUT") ::: List((re, () => mimeType, () => guard, () => fun))
+
+
+  //
+  // DELETE methods
+  //
+  def delete(path: String)(fun: => Any) =
+    dispatcherMap("DELETE") + (path -> (() => "text/html", () => true, () => fun))
+
+  def delete(path: String, mimeType: String)(fun: => Any) =
+    dispatcherMap("DELETE") + (path -> (() => mimeType, () => true, () => fun))
+
+  def delete(path: String, guard: => Boolean)(fun: => Any) =
+    dispatcherMap("DELETE") + (path -> (() => "text/html", () => guard, () => fun))
+
+  def delete(path: String, mimeType: String, guard: => Boolean)(fun: => Any) =
+    dispatcherMap("DELETE") + (path -> (() => mimeType, () => guard, () => fun))
+
+
+  def delete(re: Regex)(fun: => Any) =
+    dispatcherRegexMap("DELETE") = dispatcherRegexMap("DELETE") ::: List((re, () => "text/html", () => true, () => fun))
+
+  def delete(re: Regex, mimeType: String)(fun: => Any) =
+    dispatcherRegexMap("DELETE") = dispatcherRegexMap("DELETE") ::: List((re, () => mimeType, () => true, () => fun))
+
+  def delete(re: Regex, guard: => Boolean)(fun: => Any) =
+    dispatcherRegexMap("DELETE") = dispatcherRegexMap("DELETE") ::: List((re, () => "text/html", () => guard, () => fun))
+
+  def delete(re: Regex, mimeType: String, guard: => Boolean)(fun: => Any) =
+    dispatcherRegexMap("DELETE") = dispatcherRegexMap("DELETE") ::: List((re, () => mimeType, () => guard, () => fun))
+
+
+  //
+  // HEAD methods
+  //
+  def head(path: String)(fun: => Any) =
+    dispatcherMap("HEAD") + (path -> (() => "text/html", () => true, () => fun))
+
+  def head(path: String, mimeType: String)(fun: => Any) =
+    dispatcherMap("HEAD") + (path -> (() => mimeType, () => true, () => fun))
+
+  def head(path: String, guard: => Boolean)(fun: => Any) =
+    dispatcherMap("HEAD") + (path -> (() => "text/html", () => guard, () => fun))
+
+  def head(path: String, mimeType: String, guard: => Boolean)(fun: => Any) =
+    dispatcherMap("HEAD") + (path -> (() => mimeType, () => guard, () => fun))
+
+
+  def head(re: Regex)(fun: => Any) =
+    dispatcherRegexMap("HEAD") = dispatcherRegexMap("HEAD") ::: List((re, () => "text/html", () => true, () => fun))
+
+  def head(re: Regex, mimeType: String)(fun: => Any) =
+    dispatcherRegexMap("HEAD") = dispatcherRegexMap("HEAD") ::: List((re, () => mimeType, () => true, () => fun))
+
+  def head(re: Regex, guard: => Boolean)(fun: => Any) =
+    dispatcherRegexMap("HEAD") = dispatcherRegexMap("HEAD") ::: List((re, () => "text/html", () => guard, () => fun))
+
+  def head(re: Regex, mimeType: String, guard: => Boolean)(fun: => Any) =
+    dispatcherRegexMap("HEAD") = dispatcherRegexMap("HEAD") ::: List((re, () => mimeType, () => guard, () => fun))
+
+
+  //
+  // OPTION methods
+  //
+  def option(path: String)(fun: => Any) =
+    dispatcherMap("OPTION") + (path -> (() => "text/html", () => true, () => fun))
+
+  def option(path: String, mimeType: String)(fun: => Any) =
+    dispatcherMap("OPTION") + (path -> (() => mimeType, () => true, () => fun))
+
+  def option(path: String, guard: => Boolean)(fun: => Any) =
+    dispatcherMap("OPTION") + (path -> (() => "text/html", () => guard, () => fun))
+
+  def option(path: String, mimeType: String, guard: => Boolean)(fun: => Any) =
+    dispatcherMap("OPTION") + (path -> (() => mimeType, () => guard, () => fun))
+
+
+  def option(re: Regex)(fun: => Any) =
+    dispatcherRegexMap("OPTION") = dispatcherRegexMap("OPTION") ::: List((re, () => "text/html", () => true, () => fun))
+
+  def option(re: Regex, mimeType: String)(fun: => Any) =
+    dispatcherRegexMap("OPTION") = dispatcherRegexMap("OPTION") ::: List((re, () => mimeType, () => true, () => fun))
+
+  def option(re: Regex, guard: => Boolean)(fun: => Any) =
+    dispatcherRegexMap("OPTION") = dispatcherRegexMap("OPTION") ::: List((re, () => "text/html", () => guard, () => fun))
+
+  def option(re: Regex, mimeType: String, guard: => Boolean)(fun: => Any) =
+    dispatcherRegexMap("OPTION") = dispatcherRegexMap("OPTION") ::: List((re, () => mimeType, () => guard, () => fun))
+
+
+  //
+  // TRACE methods
+  //
+  def trace(path: String)(fun: => Any) =
+    dispatcherMap("TRACE") + (path -> (() => "text/html", () => true, () => fun))
+
+  def trace(path: String, mimeType: String)(fun: => Any) =
+    dispatcherMap("TRACE") + (path -> (() => mimeType, () => true, () => fun))
+
+  def trace(path: String, guard: => Boolean)(fun: => Any) =
+    dispatcherMap("TRACE") + (path -> (() => "text/html", () => guard, () => fun))
+
+  def trace(path: String, mimeType: String, guard: => Boolean)(fun: => Any) =
+    dispatcherMap("TRACE") + (path -> (() => mimeType, () => guard, () => fun))
+
+
+  def trace(re: Regex)(fun: => Any) =
+    dispatcherRegexMap("TRACE") = dispatcherRegexMap("TRACE") ::: List((re, () => "text/html", () => true, () => fun))
+
+  def trace(re: Regex, mimeType: String)(fun: => Any) =
+    dispatcherRegexMap("TRACE") = dispatcherRegexMap("TRACE") ::: List((re, () => mimeType, () => true, () => fun))
+
+  def trace(re: Regex, guard: => Boolean)(fun: => Any) =
+    dispatcherRegexMap("TRACE") = dispatcherRegexMap("TRACE") ::: List((re, () => "text/html", () => guard, () => fun))
+
+  def trace(re: Regex, mimeType: String, guard: => Boolean)(fun: => Any) =
+    dispatcherRegexMap("TRACE") = dispatcherRegexMap("TRACE") ::: List((re, () => mimeType, () => guard, () => fun))
 
 
 }
