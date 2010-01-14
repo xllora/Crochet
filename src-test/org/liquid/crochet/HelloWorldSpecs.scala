@@ -71,8 +71,9 @@ object HelloWorldSpecs extends Specification {
           elements(0)
         }
 
-        _404 { () => path+" not found" }
-        _417 { () => "Guard to "+path+" failed" }
+//        _404 { () => path+" not found" }
+//        _417 { () => "Guard to "+path+" failed" }
+//        _500 { () => "Internal server error accessing "+path+" because of "+error }
 
       }
 
