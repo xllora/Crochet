@@ -13,7 +13,7 @@ import util.matching.Regex
  * 
  */
 
-trait CrochetDispatcher extends HttpServlet with CrochetDynamicEnvironment {
+protected trait CrochetDispatcher extends HttpServlet with CrochetDynamicEnvironment {
 
   //
   // The main structures used as dispatchers
@@ -25,7 +25,7 @@ trait CrochetDispatcher extends HttpServlet with CrochetDynamicEnvironment {
     "PUT"     -> MMap[String, (() => String, () => Boolean, () => Any)](),
     "DELETE"  -> MMap[String, (() => String, () => Boolean, () => Any)](),
     "HEAD"    -> MMap[String, (() => String, () => Boolean, () => Any)](),
-    "OPTION"  -> MMap[String, (() => String, () => Boolean, () => Any)](),
+    "OPTIONS" -> MMap[String, (() => String, () => Boolean, () => Any)](),
     "TRACE"   -> MMap[String, (() => String, () => Boolean, () => Any)]()
     )
 
@@ -36,7 +36,7 @@ trait CrochetDispatcher extends HttpServlet with CrochetDynamicEnvironment {
     "PUT"     -> List[(Regex, () => String, () => Boolean, () => Any)](),
     "DELETE"  -> List[(Regex, () => String, () => Boolean, () => Any)](),
     "HEAD"    -> List[(Regex, () => String, () => Boolean, () => Any)](),
-    "OPTION"  -> List[(Regex, () => String, () => Boolean, () => Any)](),
+    "OPTIONS" -> List[(Regex, () => String, () => Boolean, () => Any)](),
     "TRACE"   -> List[(Regex, () => String, () => Boolean, () => Any)]()
     )
  

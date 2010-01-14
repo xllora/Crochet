@@ -13,7 +13,7 @@ import java.io.{PrintWriter, StringWriter}
  *
  */
 
-trait CrochetResponseCodes extends CrochetDynamicEnvironment {
+protected trait CrochetResponseCodes extends CrochetDynamicEnvironment {
 
   protected def _default_error_template =
     <html>

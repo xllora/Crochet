@@ -177,59 +177,59 @@ abstract class CrochetServlet extends HttpServlet with CrochetDispatcher with Cr
   //
   // HEAD methods
   //
-  def head(path: String)(fun: => Any) =
-    dispatcherMap("HEAD") + (path -> (() => "text/html", () => true, () => fun))
+  def head(path: String) =
+    dispatcherMap("HEAD") + (path -> (() => "text/html", () => true, () => ""))
 
-  def head(path: String, mimeType: String)(fun: => Any) =
-    dispatcherMap("HEAD") + (path -> (() => mimeType, () => true, () => fun))
+  def head(path: String, mimeType: String) =
+    dispatcherMap("HEAD") + (path -> (() => mimeType, () => true, () => ""))
 
-  def head(path: String, guard: => Boolean)(fun: => Any) =
-    dispatcherMap("HEAD") + (path -> (() => "text/html", () => guard, () => fun))
+  def head(path: String, guard: => Boolean) =
+    dispatcherMap("HEAD") + (path -> (() => "text/html", () => guard, () => ""))
 
-  def head(path: String, mimeType: String, guard: => Boolean)(fun: => Any) =
-    dispatcherMap("HEAD") + (path -> (() => mimeType, () => guard, () => fun))
+  def head(path: String, mimeType: String, guard: => Boolean) =
+    dispatcherMap("HEAD") + (path -> (() => mimeType, () => guard, () => ""))
 
 
-  def head(re: Regex)(fun: => Any) =
-    dispatcherRegexMap("HEAD") = dispatcherRegexMap("HEAD") ::: List((re, () => "text/html", () => true, () => fun))
+  def head(re: Regex) =
+    dispatcherRegexMap("HEAD") = dispatcherRegexMap("HEAD") ::: List((re, () => "text/html", () => true, () => ""))
 
-  def head(re: Regex, mimeType: String)(fun: => Any) =
-    dispatcherRegexMap("HEAD") = dispatcherRegexMap("HEAD") ::: List((re, () => mimeType, () => true, () => fun))
+  def head(re: Regex, mimeType: String) =
+    dispatcherRegexMap("HEAD") = dispatcherRegexMap("HEAD") ::: List((re, () => mimeType, () => true, () => ""))
 
-  def head(re: Regex, guard: => Boolean)(fun: => Any) =
-    dispatcherRegexMap("HEAD") = dispatcherRegexMap("HEAD") ::: List((re, () => "text/html", () => guard, () => fun))
+  def head(re: Regex, guard: => Boolean) =
+    dispatcherRegexMap("HEAD") = dispatcherRegexMap("HEAD") ::: List((re, () => "text/html", () => guard, () => ""))
 
-  def head(re: Regex, mimeType: String, guard: => Boolean)(fun: => Any) =
-    dispatcherRegexMap("HEAD") = dispatcherRegexMap("HEAD") ::: List((re, () => mimeType, () => guard, () => fun))
+  def head(re: Regex, mimeType: String, guard: => Boolean) =
+    dispatcherRegexMap("HEAD") = dispatcherRegexMap("HEAD") ::: List((re, () => mimeType, () => guard, () => ""))
 
 
   //
   // OPTION methods
   //
-  def option(path: String)(fun: => Any) =
-    dispatcherMap("OPTION") + (path -> (() => "text/html", () => true, () => fun))
+  def options(path: String)(fun: => Any) =
+    dispatcherMap("OPTIONS") + (path -> (() => "text/html", () => true, () => fun))
 
-  def option(path: String, mimeType: String)(fun: => Any) =
-    dispatcherMap("OPTION") + (path -> (() => mimeType, () => true, () => fun))
+  def options(path: String, mimeType: String)(fun: => Any) =
+    dispatcherMap("OPTIONS") + (path -> (() => mimeType, () => true, () => fun))
 
-  def option(path: String, guard: => Boolean)(fun: => Any) =
-    dispatcherMap("OPTION") + (path -> (() => "text/html", () => guard, () => fun))
+  def options(path: String, guard: => Boolean)(fun: => Any) =
+    dispatcherMap("OPTIONS") + (path -> (() => "text/html", () => guard, () => fun))
 
-  def option(path: String, mimeType: String, guard: => Boolean)(fun: => Any) =
-    dispatcherMap("OPTION") + (path -> (() => mimeType, () => guard, () => fun))
+  def options(path: String, mimeType: String, guard: => Boolean)(fun: => Any) =
+    dispatcherMap("OPTIONS") + (path -> (() => mimeType, () => guard, () => fun))
 
 
-  def option(re: Regex)(fun: => Any) =
-    dispatcherRegexMap("OPTION") = dispatcherRegexMap("OPTION") ::: List((re, () => "text/html", () => true, () => fun))
+  def options(re: Regex)(fun: => Any) =
+    dispatcherRegexMap("OPTIONS") = dispatcherRegexMap("OPTIONS") ::: List((re, () => "text/html", () => true, () => fun))
 
-  def option(re: Regex, mimeType: String)(fun: => Any) =
-    dispatcherRegexMap("OPTION") = dispatcherRegexMap("OPTION") ::: List((re, () => mimeType, () => true, () => fun))
+  def options(re: Regex, mimeType: String)(fun: => Any) =
+    dispatcherRegexMap("OPTIONS") = dispatcherRegexMap("OPTIONS") ::: List((re, () => mimeType, () => true, () => fun))
 
-  def option(re: Regex, guard: => Boolean)(fun: => Any) =
-    dispatcherRegexMap("OPTION") = dispatcherRegexMap("OPTION") ::: List((re, () => "text/html", () => guard, () => fun))
+  def options(re: Regex, guard: => Boolean)(fun: => Any) =
+    dispatcherRegexMap("OPTIONS") = dispatcherRegexMap("OPTIONS") ::: List((re, () => "text/html", () => guard, () => fun))
 
-  def option(re: Regex, mimeType: String, guard: => Boolean)(fun: => Any) =
-    dispatcherRegexMap("OPTION") = dispatcherRegexMap("OPTION") ::: List((re, () => mimeType, () => guard, () => fun))
+  def options(re: Regex, mimeType: String, guard: => Boolean)(fun: => Any) =
+    dispatcherRegexMap("OPTIONS") = dispatcherRegexMap("OPTIONS") ::: List((re, () => mimeType, () => guard, () => fun))
 
 
   //

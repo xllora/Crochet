@@ -11,7 +11,7 @@ import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
  *
  */
 
-trait CrochetDynamicEnvironment {
+protected trait CrochetDynamicEnvironment {
 
    val version = "0.1vcli"
   
