@@ -53,16 +53,18 @@ protected trait CrochetResponseCodes extends CrochetDynamicEnvironment {
     pathVal.withValue(path) {
       requestVal.withValue(request) {
         responseVal.withValue(response) {
-          val smsg:String = e match { 
-            case Some(e) if e.getMessage!=null => e.printStackTrace(pw) ; e.getMessage.trim
-            case Some(e) if e.getMessage==null => e.printStackTrace(pw) ; title()
-            case _ => val t = title() ; pw.println(t) ; t
-          }
-          errorSummaryVal.withValue(smsg) {
-            errorVal.withValue(sw.toString) {
-              messageVal.withValue(msg()) {
-                val output = _error_template()
-                response.getWriter.print(output)
+          sessionVal.withValue(extractSession(request)) {
+            val smsg:String = e match {
+              case Some(e) if e.getMessage!=null => e.printStackTrace(pw) ; e.getMessage.trim
+              case Some(e) if e.getMessage==null => e.printStackTrace(pw) ; title()
+              case _ => val t = title() ; pw.println(t) ; t
+            }
+            errorSummaryVal.withValue(smsg) {
+              errorVal.withValue(sw.toString) {
+                messageVal.withValue(msg()) {
+                  val output = _error_template()
+                  response.getWriter.print(output)
+                }
               }
             }
           }

@@ -1,7 +1,7 @@
 package org.liquid.crochet
 
 import util.DynamicVariable
-import javax.servlet.http.{HttpServletResponse, HttpServletRequest}
+import javax.servlet.http.{HttpSession, HttpServletResponse, HttpServletRequest}
 
 /**
  * This trait provides the basic dynamic environment for a web API
@@ -21,6 +21,7 @@ protected trait CrochetDynamicEnvironment {
    protected val          pathVal = new DynamicVariable[String](null)
    protected val       requestVal = new DynamicVariable[HttpServletRequest](null)
    protected val      responseVal = new DynamicVariable[HttpServletResponse](null)
+   protected val       sessionVal = new DynamicVariable[Option[HttpSession]](null)
    protected val        headerVal = new DynamicVariable[Map[String,String]](null)
    protected val         paramVal = new DynamicVariable[Map[String,String]](null)
    protected val      paramMapVal = new DynamicVariable[Map[String,Array[String]]](null)
@@ -35,6 +36,7 @@ protected trait CrochetDynamicEnvironment {
    def         path = pathVal.value
    def      request = requestVal.value
    def     response = responseVal.value
+   def      session = sessionVal.value
    def       header = headerVal.value
    def       params = paramVal.value
    def    paramsMap = paramMapVal.value
@@ -44,4 +46,14 @@ protected trait CrochetDynamicEnvironment {
    def errorSummary = errorSummaryVal.value
  
 
+  // Auxiliar methods
+  protected def extractSession(request:HttpServletRequest):Option[HttpSession] = {
+    try {
+      val s = request.getSession
+      if (s==null) None else Some(s)
+    }
+    catch {
+      case _ => None
+    }
+  }
 }

@@ -18,26 +18,26 @@ protected trait CrochetDispatcher extends HttpServlet with CrochetDynamicEnviron
   //
   // The main structures used as dispatchers
   //
-  protected var dispatcherMap = MMap[String,MMap[String,(()=>String,()=>Boolean,()=>Any)]]()
+  protected var dispatcherMap = MMap[String,MMap[String,(()=>String,()=>Boolean,(String,Option[String])=>Boolean,()=>Any)]]()
   dispatcherMap ++ List(
-    "GET"     -> MMap[String, (() => String, () => Boolean, () => Any)](),
-    "POST"    -> MMap[String, (() => String, () => Boolean, () => Any)](),
-    "PUT"     -> MMap[String, (() => String, () => Boolean, () => Any)](),
-    "DELETE"  -> MMap[String, (() => String, () => Boolean, () => Any)](),
-    "HEAD"    -> MMap[String, (() => String, () => Boolean, () => Any)](),
-    "OPTIONS" -> MMap[String, (() => String, () => Boolean, () => Any)](),
-    "TRACE"   -> MMap[String, (() => String, () => Boolean, () => Any)]()
+    "GET"     -> MMap[String, (() => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),
+    "POST"    -> MMap[String, (() => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),
+    "PUT"     -> MMap[String, (() => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),
+    "DELETE"  -> MMap[String, (() => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),
+    "HEAD"    -> MMap[String, (() => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),
+    "OPTIONS" -> MMap[String, (() => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),
+    "TRACE"   -> MMap[String, (() => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)]()
     )
 
-  protected var dispatcherRegexMap = MMap[String,List[(Regex,()=>String,()=>Boolean,()=>Any)]]()
+  protected var dispatcherRegexMap = MMap[String,List[(Regex,()=>String,()=>Boolean,(String,Option[String])=>Boolean,()=>Any)]]()
   dispatcherRegexMap ++ List(
-    "GET"     -> List[(Regex, () => String, () => Boolean, () => Any)](),
-    "POST"    -> List[(Regex, () => String, () => Boolean, () => Any)](),
-    "PUT"     -> List[(Regex, () => String, () => Boolean, () => Any)](),
-    "DELETE"  -> List[(Regex, () => String, () => Boolean, () => Any)](),
-    "HEAD"    -> List[(Regex, () => String, () => Boolean, () => Any)](),
-    "OPTIONS" -> List[(Regex, () => String, () => Boolean, () => Any)](),
-    "TRACE"   -> List[(Regex, () => String, () => Boolean, () => Any)]()
+    "GET"     -> List[(Regex, () => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),
+    "POST"    -> List[(Regex, () => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),
+    "PUT"     -> List[(Regex, () => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),
+    "DELETE"  -> List[(Regex, () => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),
+    "HEAD"    -> List[(Regex, () => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),
+    "OPTIONS" -> List[(Regex, () => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),
+    "TRACE"   -> List[(Regex, () => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)]()
     )
  
   //
@@ -48,62 +48,69 @@ protected trait CrochetDispatcher extends HttpServlet with CrochetDynamicEnviron
     val   pathURI = request.getRequestURI
     val headerMap = extractHeaderMap(request)
     val   (ms,ma) = extractParameters(request)
+    val  cSession = extractSession(request)
+    var      user = request.getRemoteUser match {
+                      case null => None
+                      case s    => Some(s)
+                    }
 
     try {
       pathVal.withValue(pathURI) {
         requestVal.withValue(request) {
           responseVal.withValue(response) {
-            headerVal.withValue(headerMap) {
-              paramVal.withValue(ms) {
-                paramMapVal.withValue(ma) {
-                  //
-                  // Check if it a regular path.
-                  //
-                  if (dispatcherMap(method) contains pathURI) {
-                    elementsVal.withValue(List[String]()) {
-                      val (mime, guard, function) = dispatcherMap(method)(pathURI)
-                      if (guard()) {
-                        // Found and guard satisfied
-                        response.setStatus(HttpServletResponse.SC_OK)
-                        response.setContentType(mime())
-                        response.getWriter.print(function().toString)
-                      }
-                      else {
-                        // Found and guard not satisfied
-                        guardViolation(path,request,response)
-                      }
-                    }
-                  }
-                  else {
-                      //
-                      // May be on the regular expression pool
-                      //
-                      val   list = dispatcherRegexMap(method)
-                      val target = list.find(
-                            (t:Tuple4[Regex,()=>String,()=>Boolean,()=>Any])=> {
-                              val r = t._1
-                              r.findFirstIn(pathURI) match {
-                                case Some(_) => true
-                                case None    => false
-                              }
-                            }
-                      )
-                      val elems = if (target==None) List[String]() else extractMatches(pathURI,target.get._1)
-                      elementsVal.withValue(elems) {
-                        target match {
-                           case Some(t) if  t._3() => // Matched and guard satisfied
-                                                      response setStatus HttpServletResponse.SC_OK
-                                                      response setContentType t._2()
-                                                      response.getWriter.print(t._4().toString)
-
-                           case Some(t) if !t._3() => // Guard not satisfied
-                                                      guardViolation(path,request,response)
-
-                           case _ => // Request could not be found either way
-                                     requestNotFound(path,request,response)
-
+            sessionVal.withValue(cSession) {
+              headerVal.withValue(headerMap) {
+                paramVal.withValue(ms) {
+                  paramMapVal.withValue(ma) {
+                    //
+                    // Check if it a regular path.
+                    //
+                    if (dispatcherMap(method) contains pathURI) {
+                      elementsVal.withValue(List[String]()) {
+                        val (mime, guard, auth, function) = dispatcherMap(method)(pathURI)
+                        if (!auth(pathURI,user) ) {
+                           unauthorizedAccess(path,user,request,response)
+                        }
+                        else if (guard()) {
+                          // Found and guard satisfied
+                          response.setStatus(HttpServletResponse.SC_OK)
+                          response.setContentType(mime())
+                          response.getWriter.print(function().toString)
                         }
                       }
+                    }
+                    else {
+                        //
+                        // May be on the regular expression pool
+                        //
+                        val   list = dispatcherRegexMap(method)
+                        val target = list.find(
+                              (t:Tuple5[Regex,()=>String,()=>Boolean,(String,Option[String]) => Boolean,()=>Any])=> {
+                                val r = t._1
+                                r.findFirstIn(pathURI) match {
+                                  case Some(_) => true
+                                  case None    => false
+                                }
+                              }
+                        )
+                        val elems = if (target==None) List[String]() else extractMatches(pathURI,target.get._1)
+                        elementsVal.withValue(elems) {
+                          target match {
+
+                             case Some(t) if  t._3() && t._4(pathURI,user) => // Matched, guard satisfied, and authorized
+                                                        response setStatus HttpServletResponse.SC_OK
+                                                        response setContentType t._2()
+                                                        response.getWriter.print(t._5().toString)
+
+                             case Some(t) if  t._3() && !t._4(pathURI,user) => // Matched and guard satisfied, but not authorized
+                                                        unauthorizedAccess(path,user,request,response)
+
+                             case _ => // Request could not be found either way
+                                       requestNotFound(path,request,response)
+
+                          }
+                        }
+                    }
                   }
                 }
               }
@@ -156,7 +163,7 @@ protected trait CrochetDispatcher extends HttpServlet with CrochetDynamicEnviron
     map
   }
 
-  def guardViolation(path: String, request: HttpServletRequest, response: HttpServletResponse)
   def internalServerError(path: String, request: HttpServletRequest, response: HttpServletResponse, e: Throwable)
+  def unauthorizedAccess(path: String, user:Option[String], request: HttpServletRequest, response: HttpServletResponse)
   def requestNotFound(path: String, request: HttpServletRequest, response: HttpServletResponse)
 }
