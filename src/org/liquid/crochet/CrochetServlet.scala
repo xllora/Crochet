@@ -78,7 +78,7 @@ abstract class CrochetServlet extends HttpServlet with CrochetDispatcher with Cr
     dispatcherMap("GET") + (path -> (() => mimeType, () => guard, (a:String,b:Option[String])=>true, () => fun))
 
   def get(path: String, mimeType: String, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-     dispatcherMap("GET") + (path -> (() => mimeType, () => true, auth, () => fun))
+    dispatcherMap("GET") + (path -> (() => mimeType, () => true, auth, () => fun))
 
   def get(path: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
     dispatcherMap("GET") + (path -> (() => "text/html", () => guard, auth, () => fun))
