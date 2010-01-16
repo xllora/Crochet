@@ -4,10 +4,11 @@ import org.mortbay.jetty.Server
 import org.mortbay.jetty.servlet.{ServletHolder, Context}
 
 /**
- * A basic server to 
+ * A basic server based on Jetty for quick testing 
  *
  * @author Xavier Llora
  * @date Jan 10, 2010 at 5:29:48 PM
+ * 
  * 
  */
 
