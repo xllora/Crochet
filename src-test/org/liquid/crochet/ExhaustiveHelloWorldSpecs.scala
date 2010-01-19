@@ -16,7 +16,8 @@ import javax.servlet.http.HttpServletResponse
  *
  */
 
-object HelloWorldSpecs extends Specification {
+object ExhaustiveHelloWorldSpecs extends Specification {
+  
   protected val TEST_PORT = 8080
 
   protected val helloWordXHTML = <html>
@@ -194,8 +195,7 @@ object HelloWorldSpecs extends Specification {
 
       val client = HttpClient("http", "localhost", TEST_PORT)
       val server = new CrochetServer(TEST_PORT, csHelloWorld)
-      spawn {server.go}
-      Thread.sleep(500)
+      server.start
 
       //
       // Basic GET tests for fixed paths
