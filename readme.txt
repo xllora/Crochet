@@ -2,7 +2,7 @@ Welcome to Crochet
 
 Crochet is a light weight web framework oriented to rapid prototyping of
 REST API. If you are looking for a Rails like framework written in Scala,
-please take a look at Lift (http://liftweb.net/).
+please take a look at Lift at http://liftweb.net/.
 
 Crochet targets to help quickly prototype REST APIs relying on the flexibility
 of the Scala language. The initial ideas for Crochet were inspired after

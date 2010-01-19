@@ -194,7 +194,7 @@ object ExhaustiveHelloWorldSpecs extends Specification {
     "Return Hello World!" in {
 
       val client = HttpClient("http", "localhost", TEST_PORT)
-      val server = new CrochetServer(TEST_PORT, csHelloWorld)
+      val server = CrochetServer(TEST_PORT, csHelloWorld)
       server.start
 
       //

@@ -13,7 +13,7 @@ import javax.servlet.http.{HttpSession, HttpServletResponse, HttpServletRequest}
 
 protected trait CrochetDynamicEnvironment {
 
-   val version = "0.1vcli"
+   val version = "0.1.1vcli"
   
    //
    // Dynamic variables available to the method
@@ -26,8 +26,8 @@ protected trait CrochetDynamicEnvironment {
    protected val         paramVal = new DynamicVariable[Map[String,String]](null)
    protected val      paramMapVal = new DynamicVariable[Map[String,Array[String]]](null)
    protected val      elementsVal = new DynamicVariable[List[String]](null)
-   protected val       messageVal = new DynamicVariable[String](null)
-   protected val         errorVal = new DynamicVariable[String](null)
+   protected val       messageVal = new DynamicVariable[Any](null)
+   protected val         errorVal = new DynamicVariable[Any](null)
    protected val  errorSummaryVal = new DynamicVariable[String](null)
 
    //
