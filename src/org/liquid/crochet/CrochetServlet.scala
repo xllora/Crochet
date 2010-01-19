@@ -12,7 +12,7 @@ import util.matching.Regex
  * @date Jan 9, 2010 at 5:13:03 PM
  * 
  */
-abstract class CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResponseCodes {
+trait CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResponseCodes {
   
   //
   // Implicit casting

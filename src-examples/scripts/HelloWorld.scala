@@ -8,8 +8,8 @@
 
 import org.liquid.crochet._
 
-Crochet ( new CrochetServlet {
+new Crochet {
 
   get("/message","text/plain") { "Hello World!" }
 
-})
+} on 8080
