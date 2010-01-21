@@ -1,4 +1,4 @@
-package org.liquid.crochet
+package crochet
 
 import java.lang.{Long,Float,Double}
 import java.util.UUID

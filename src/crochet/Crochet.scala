@@ -1,4 +1,4 @@
-package org.liquid.crochet
+package crochet
 
 /**
  * A basic starting self sufficient server

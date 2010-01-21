@@ -1,4 +1,4 @@
-package org.liquid.crochet
+package crochet
 
 import scala.collection.mutable.{Map=>MMap}
 

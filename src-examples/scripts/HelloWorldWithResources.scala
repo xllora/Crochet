@@ -6,7 +6,7 @@
  * 
  */
 
-import org.liquid.crochet._
+import crochet._
 
 new Crochet {
 

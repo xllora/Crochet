@@ -1,4 +1,4 @@
-package org.liquid.crochet
+package crochet
 
 import org.mortbay.jetty.Server
 import org.mortbay.jetty.handler.ResourceHandler

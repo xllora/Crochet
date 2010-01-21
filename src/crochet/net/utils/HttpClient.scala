@@ -1,7 +1,5 @@
-package org.liquid.net.utils
+package crochet.net.utils
 
-import java.net.URL
-import java.io.{InputStreamReader, InputStream, BufferedReader}
 import org.apache.commons.httpclient.{HttpMethod, HttpStatus, HttpClient => ACHttpClient}
 import org.apache.commons.httpclient.methods._
 

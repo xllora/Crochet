@@ -1,10 +1,11 @@
-package org.liquid.crochet
+package crochet
 
 import scala.concurrent.ops.spawn
 import org.specs.Specification
 import java.io.StringReader
 import scala.xml.XML
-import org.liquid.net.utils._
+import crochet._
+import crochet.net.utils._
 import javax.servlet.http.HttpServletResponse
 
 

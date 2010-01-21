@@ -1,4 +1,4 @@
-package org.liquid.crochet
+package crochet
 
 import util.DynamicVariable
 import javax.servlet.http.{HttpSession, HttpServletResponse, HttpServletRequest}
@@ -13,7 +13,7 @@ import javax.servlet.http.{HttpSession, HttpServletResponse, HttpServletRequest}
 
 protected trait CrochetDynamicEnvironment {
 
-   val version = "0.1.1vcli"
+   val version = "0.1.2vcli"
   
    //
    // Dynamic variables available to the method

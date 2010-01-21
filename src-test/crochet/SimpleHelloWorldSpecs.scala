@@ -1,7 +1,8 @@
-package org.liquid.crochet
+package crochet
 
 import org.specs.Specification
-import org.liquid.net.utils.HttpClient
+import crochet._
+import crochet.net.utils._
 
 /**
  * A simple Hello World using Crochet
