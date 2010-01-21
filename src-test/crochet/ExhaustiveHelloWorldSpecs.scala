@@ -40,20 +40,20 @@ object ExhaustiveHelloWorldSpecs extends Specification {
     get("/msg") {helloWordXHTML}
     get("/msg/html", "text/html") {helloWordXHTML}
     get("/msg/text", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    get("/msg/text/auth", (uri:String,path:Option[String])=>path==None) { helloWordXHTML }
+    get("/msg/text/auth", (path:String,user:Option[String])=>user==None) { helloWordXHTML }
     get("/msg/text/2", "text/plain", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    get("/msg/text/auth/2", "text/plain", (uri:String,path:Option[String])=>path==None) { helloWorldText }
-    get("/msg/html/2", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWordXHTML}
-    get("/msg/text/all", "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWorldText}
+    get("/msg/text/auth/2", "text/plain", (path:String,user:Option[String])=>user==None) { helloWorldText }
+    get("/msg/html/2", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWordXHTML}
+    get("/msg/text/all", "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWorldText}
 
     get("^/re/msg$".r) {helloWordXHTML}
     get("^/re/msg/html$".r, "text/html") {helloWordXHTML}
     get("^/re/msg/text$".r, {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    get("^/re/msg/text/auth$".r, (uri:String,path:Option[String])=>path==None) { helloWordXHTML }
+    get("^/re/msg/text/auth$".r, (path:String,user:Option[String])=>user==None) { helloWordXHTML }
     get("^/re/msg/text/2$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    get("^/re/msg/text/auth/2$".r, "text/plain", (uri:String,path:Option[String])=>path==None) { helloWorldText }
-    get("^/re/msg/html/2$".r, {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWordXHTML}
-    get("^/re/msg/text/all$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWorldText}
+    get("^/re/msg/text/auth/2$".r, "text/plain", (path:String,user:Option[String])=>user==None) { helloWorldText }
+    get("^/re/msg/html/2$".r, {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWordXHTML}
+    get("^/re/msg/text/all$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWorldText}
     get("^/re/echo/([0-9]+)$".r, "text/plain", {elements.size == 1}) {elements(0)}
 
     //
@@ -62,20 +62,20 @@ object ExhaustiveHelloWorldSpecs extends Specification {
     post("/msg") {helloWordXHTML}
     post("/msg/html", "text/html") {helloWordXHTML}
     post("/msg/text", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    post("/msg/text/auth", (uri:String,path:Option[String])=>path==None) { helloWordXHTML }
+    post("/msg/text/auth", (path:String,user:Option[String])=>user==None) { helloWordXHTML }
     post("/msg/text/2", "text/plain", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    post("/msg/text/auth/2", "text/plain", (uri:String,path:Option[String])=>path==None) { helloWorldText }
-    post("/msg/html/2", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWordXHTML}
-    post("/msg/text/all", "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWorldText}
+    post("/msg/text/auth/2", "text/plain", (path:String,user:Option[String])=>user==None) { helloWorldText }
+    post("/msg/html/2", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWordXHTML}
+    post("/msg/text/all", "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWorldText}
 
     post("^/re/msg$".r) {helloWordXHTML}
     post("^/re/msg/html$".r, "text/html") {helloWordXHTML}
     post("^/re/msg/text$".r, {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    post("^/re/msg/text/auth$".r, (uri:String,path:Option[String])=>path==None) { helloWordXHTML }
+    post("^/re/msg/text/auth$".r, (path:String,user:Option[String])=>user==None) { helloWordXHTML }
     post("^/re/msg/text/2$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    post("^/re/msg/text/auth/2$".r, "text/plain", (uri:String,path:Option[String])=>path==None) { helloWorldText }
-    post("^/re/msg/html/2$".r, {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWordXHTML}
-    post("^/re/msg/text/all$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWorldText}
+    post("^/re/msg/text/auth/2$".r, "text/plain", (path:String,user:Option[String])=>user==None) { helloWorldText }
+    post("^/re/msg/html/2$".r, {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWordXHTML}
+    post("^/re/msg/text/all$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWorldText}
     post("^/re/echo/([0-9]+)$".r, "text/plain", {elements.size == 1}) {elements(0)}
 
     //
@@ -84,20 +84,20 @@ object ExhaustiveHelloWorldSpecs extends Specification {
     put("/msg") {helloWordXHTML}
     put("/msg/html", "text/html") {helloWordXHTML}
     put("/msg/text", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    put("/msg/text/auth", (uri:String,path:Option[String])=>path==None) { helloWordXHTML }
+    put("/msg/text/auth", (path:String,user:Option[String])=>user==None) { helloWordXHTML }
     put("/msg/text/2", "text/plain", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    put("/msg/text/auth/2", "text/plain", (uri:String,path:Option[String])=>path==None) { helloWorldText }
-    put("/msg/html/2", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWordXHTML}
-    put("/msg/text/all", "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWorldText}
+    put("/msg/text/auth/2", "text/plain", (path:String,user:Option[String])=>user==None) { helloWorldText }
+    put("/msg/html/2", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWordXHTML}
+    put("/msg/text/all", "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWorldText}
 
     put("^/re/msg$".r) {helloWordXHTML}
     put("^/re/msg/html$".r, "text/html") {helloWordXHTML}
     put("^/re/msg/text$".r, {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    put("^/re/msg/text/auth$".r, (uri:String,path:Option[String])=>path==None) { helloWordXHTML }
+    put("^/re/msg/text/auth$".r, (path:String,user:Option[String])=>user==None) { helloWordXHTML }
     put("^/re/msg/text/2$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    put("^/re/msg/text/auth/2$".r, "text/plain", (uri:String,path:Option[String])=>path==None) { helloWorldText }
-    put("^/re/msg/html/2$".r, {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWordXHTML}
-    put("^/re/msg/text/all$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWorldText}
+    put("^/re/msg/text/auth/2$".r, "text/plain", (path:String,user:Option[String])=>user==None) { helloWorldText }
+    put("^/re/msg/html/2$".r, {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWordXHTML}
+    put("^/re/msg/text/all$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWorldText}
     put("^/re/echo/([0-9]+)$".r, "text/plain", {elements.size == 1}) {elements(0)}
 
     //
@@ -106,20 +106,20 @@ object ExhaustiveHelloWorldSpecs extends Specification {
     delete("/msg") {helloWordXHTML}
     delete("/msg/html", "text/html") {helloWordXHTML}
     delete("/msg/text", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    delete("/msg/text/auth", (uri:String,path:Option[String])=>path==None) { helloWordXHTML }
+    delete("/msg/text/auth", (path:String,user:Option[String])=>user==None) { helloWordXHTML }
     delete("/msg/text/2", "text/plain", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    delete("/msg/text/auth/2", "text/plain", (uri:String,path:Option[String])=>path==None) { helloWorldText }
-    delete("/msg/html/2", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWordXHTML}
-    delete("/msg/text/all", "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWorldText}
+    delete("/msg/text/auth/2", "text/plain", (path:String,user:Option[String])=>user==None) { helloWorldText }
+    delete("/msg/html/2", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWordXHTML}
+    delete("/msg/text/all", "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWorldText}
 
     delete("^/re/msg$".r) {helloWordXHTML}
     delete("^/re/msg/html$".r, "text/html") {helloWordXHTML}
     delete("^/re/msg/text$".r, {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    delete("^/re/msg/text/auth$".r, (uri:String,path:Option[String])=>path==None) { helloWordXHTML }
+    delete("^/re/msg/text/auth$".r, (path:String,user:Option[String])=>user==None) { helloWordXHTML }
     delete("^/re/msg/text/2$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    delete("^/re/msg/text/auth/2$".r, "text/plain", (uri:String,path:Option[String])=>path==None) { helloWorldText }
-    delete("^/re/msg/html/2$".r, {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWordXHTML}
-    delete("^/re/msg/text/all$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWorldText}
+    delete("^/re/msg/text/auth/2$".r, "text/plain", (path:String,user:Option[String])=>user==None) { helloWorldText }
+    delete("^/re/msg/html/2$".r, {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWordXHTML}
+    delete("^/re/msg/text/all$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWorldText}
     delete("^/re/echo/([0-9]+)$".r, "text/plain", {elements.size == 1}) {elements(0)}
 
     //
@@ -128,20 +128,20 @@ object ExhaustiveHelloWorldSpecs extends Specification {
     head("/msg")
     head("/msg/html", "text/html")
     head("/msg/text", {header("Host") == "localhost:" + TEST_PORT})
-    head("/msg/text/auth", (uri:String,path:Option[String])=>path==None)
+    head("/msg/text/auth", (path:String,user:Option[String])=>user==None)
     head("/msg/text/2", "text/plain", {header("Host") == "localhost:" + TEST_PORT})
-    head("/msg/text/auth/2", "text/plain", (uri:String,path:Option[String])=>path==None)
-    head("/msg/html/2", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None)
-    head("/msg/text/all", "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None)
+    head("/msg/text/auth/2", "text/plain", (path:String,user:Option[String])=>user==None)
+    head("/msg/html/2", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None)
+    head("/msg/text/all", "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None)
 
     head("^/re/msg$".r)
     head("^/re/msg/html$".r, "text/html")
     head("^/re/msg/text$".r, {header("Host") == "localhost:" + TEST_PORT})
-    head("^/re/msg/text/auth$".r, (uri:String,path:Option[String])=>path==None)
+    head("^/re/msg/text/auth$".r, (path:String,user:Option[String])=>user==None)
     head("^/re/msg/text/2$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT})
-    head("^/re/msg/text/auth/2$".r, "text/plain", (uri:String,path:Option[String])=>path==None)
-    head("^/re/msg/html/2$".r, {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None)
-    head("^/re/msg/text/all$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None)
+    head("^/re/msg/text/auth/2$".r, "text/plain", (path:String,user:Option[String])=>user==None)
+    head("^/re/msg/html/2$".r, {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None)
+    head("^/re/msg/text/all$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None)
     head("^/re/echo/([0-9]+)$".r, "text/plain", {elements.size == 1})
 
     //
@@ -150,20 +150,20 @@ object ExhaustiveHelloWorldSpecs extends Specification {
     options("/msg") {helloWordXHTML}
     options("/msg/html", "text/html") {helloWordXHTML}
     options("/msg/text", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    options("/msg/text/auth", (uri:String,path:Option[String])=>path==None) { helloWordXHTML }
+    options("/msg/text/auth", (path:String,user:Option[String])=>user==None) { helloWordXHTML }
     options("/msg/text/2", "text/plain", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    options("/msg/text/auth/2", "text/plain", (uri:String,path:Option[String])=>path==None) { helloWorldText }
-    options("/msg/html/2", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWordXHTML}
-    options("/msg/text/all", "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWorldText}
+    options("/msg/text/auth/2", "text/plain", (path:String,user:Option[String])=>user==None) { helloWorldText }
+    options("/msg/html/2", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWordXHTML}
+    options("/msg/text/all", "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWorldText}
 
     options("^/re/msg$".r) {helloWordXHTML}
     options("^/re/msg/html$".r, "text/html") {helloWordXHTML}
     options("^/re/msg/text$".r, {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    options("^/re/msg/text/auth$".r, (uri:String,path:Option[String])=>path==None) { helloWordXHTML }
+    options("^/re/msg/text/auth$".r, (path:String,user:Option[String])=>user==None) { helloWordXHTML }
     options("^/re/msg/text/2$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    options("^/re/msg/text/auth/2$".r, "text/plain", (uri:String,path:Option[String])=>path==None) { helloWorldText }
-    options("^/re/msg/html/2$".r, {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWordXHTML}
-    options("^/re/msg/text/all$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWorldText}
+    options("^/re/msg/text/auth/2$".r, "text/plain", (path:String,user:Option[String])=>user==None) { helloWorldText }
+    options("^/re/msg/html/2$".r, {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWordXHTML}
+    options("^/re/msg/text/all$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWorldText}
     options("^/re/echo/([0-9]+)$".r, "text/plain", {elements.size == 1}) {elements(0)}
 
     //
@@ -172,20 +172,20 @@ object ExhaustiveHelloWorldSpecs extends Specification {
     trace("/msg") {helloWordXHTML}
     trace("/msg/html", "text/html") {helloWordXHTML}
     trace("/msg/text", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    trace("/msg/text/auth", (uri:String,path:Option[String])=>path==None) { helloWordXHTML }
+    trace("/msg/text/auth", (path:String,user:Option[String])=>user==None) { helloWordXHTML }
     trace("/msg/text/2", "text/plain", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    trace("/msg/text/auth/2", "text/plain", (uri:String,path:Option[String])=>path==None) { helloWorldText }
-    trace("/msg/html/2", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWordXHTML}
-    trace("/msg/text/all", "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWorldText}
+    trace("/msg/text/auth/2", "text/plain", (path:String,user:Option[String])=>user==None) { helloWorldText }
+    trace("/msg/html/2", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWordXHTML}
+    trace("/msg/text/all", "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWorldText}
 
     trace("^/re/msg$".r) {helloWordXHTML}
     trace("^/re/msg/html$".r, "text/html") {helloWordXHTML}
     trace("^/re/msg/text$".r, {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    trace("^/re/msg/text/auth$".r, (uri:String,path:Option[String])=>path==None) { helloWordXHTML }
+    trace("^/re/msg/text/auth$".r, (path:String,user:Option[String])=>user==None) { helloWordXHTML }
     trace("^/re/msg/text/2$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}) {helloWorldText}
-    trace("^/re/msg/text/auth/2$".r, "text/plain", (uri:String,path:Option[String])=>path==None) { helloWorldText }
-    trace("^/re/msg/html/2$".r, {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWordXHTML}
-    trace("^/re/msg/text/all$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (uri:String,path:Option[String])=>path==None) {helloWorldText}
+    trace("^/re/msg/text/auth/2$".r, "text/plain", (path:String,user:Option[String])=>user==None) { helloWorldText }
+    trace("^/re/msg/html/2$".r, {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWordXHTML}
+    trace("^/re/msg/text/all$".r, "text/plain", {header("Host") == "localhost:" + TEST_PORT}, (path:String,user:Option[String])=>user==None) {helloWorldText}
     trace("^/re/echo/([0-9]+)$".r, "text/plain", {elements.size == 1}) {elements(0)}
 
   }

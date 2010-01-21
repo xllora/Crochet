@@ -69,7 +69,7 @@ protected trait CrochetDispatcher extends HttpServlet with CrochetDynamicEnviron
                       elementsVal.withValue(List[String]()) {
                         val (mime, guard, auth, function) = dispatcherMap(method)(pathURI)
                         if (!auth(pathURI,user) ) {
-                           unauthorizedAccess(path,user,request,response)
+                          unauthorizedAccess(path,user,request,response)
                         }
                         else if (guard()) {
                           // Found and guard satisfied
@@ -90,9 +90,12 @@ protected trait CrochetDispatcher extends HttpServlet with CrochetDynamicEnviron
                         val target = list.find(
                               (t:Tuple5[Regex,()=>String,()=>Boolean,(String,Option[String]) => Boolean,()=>Any])=> {
                                 val r = t._1
-                                r.findFirstIn(pathURI) match {
-                                  case Some(_) => if (t._3()) true else false
-                                  case None    => false
+                                val e = extractMatches(pathURI,r)
+                                elementsVal.withValue(e) {
+                                  r.findFirstIn(pathURI) match {
+                                    case Some(_) => if (t._3()) true else false
+                                    case None    => false
+                                  }
                                 }
                               }
                         )

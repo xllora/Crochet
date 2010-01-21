@@ -213,6 +213,7 @@ protected trait CrochetResponseCodes extends CrochetDynamicEnvironment {
   //
   // Default response codes set by default
   //
+  _401 { () => <h3>Unauthorized access to {path}</h3><b>Reason:</b><pre>Not authorized</pre> }
   _404 { () => <h3>Problem accessing {path}</h3><b>Reason:</b><pre>not found</pre> }
-  _500 { () => <h3>Internal server error accessing {path}</h3><b>Reason:</b><pre>error</pre> }
+  _500 { () => <h3>Internal server error accessing {path}</h3><b>Reason:</b><pre>{error}</pre> }
 }
