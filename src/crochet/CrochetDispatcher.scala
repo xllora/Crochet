@@ -77,6 +77,9 @@ protected trait CrochetDispatcher extends HttpServlet with CrochetDynamicEnviron
                           response.setContentType(mime())
                           response.getWriter.print(function().toString)
                         }
+                        else {
+                          requestNotFound(path,request,response)
+                        }
                       }
                     }
                     else {
@@ -88,7 +91,7 @@ protected trait CrochetDispatcher extends HttpServlet with CrochetDynamicEnviron
                               (t:Tuple5[Regex,()=>String,()=>Boolean,(String,Option[String]) => Boolean,()=>Any])=> {
                                 val r = t._1
                                 r.findFirstIn(pathURI) match {
-                                  case Some(_) => true
+                                  case Some(_) => if (t._3()) true else false
                                   case None    => false
                                 }
                               }
