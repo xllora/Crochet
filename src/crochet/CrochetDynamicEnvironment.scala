@@ -13,7 +13,7 @@ import javax.servlet.http.{HttpSession, HttpServletResponse, HttpServletRequest}
 
 protected trait CrochetDynamicEnvironment {
 
-   val version = "0.1.4vcli"
+   val version = "0.1.5vcli"
   
    //
    // Dynamic variables available to the method

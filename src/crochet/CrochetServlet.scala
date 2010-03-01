@@ -107,7 +107,7 @@ trait CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResp
   def get(re: Regex, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
     dispatcherRegexMap("GET") = dispatcherRegexMap("GET") ::: List((re, () => "text/html", () => guard, auth, () => fun))
 
-  def get(re: Regex, mimeType: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
+  def get(re: Regex, mimeType: => String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
     dispatcherRegexMap("GET") = dispatcherRegexMap("GET") ::: List((re, () => mimeType, () => guard, auth, () => fun))
 
 
@@ -162,7 +162,7 @@ trait CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResp
   def post(re: Regex, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
     dispatcherRegexMap("POST") = dispatcherRegexMap("POST") ::: List((re, () => "text/html", () => guard, auth, () => fun))
 
-  def post(re: Regex, mimeType: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
+  def post(re: Regex, mimeType: => String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
     dispatcherRegexMap("POST") = dispatcherRegexMap("POST") ::: List((re, () => mimeType, () => guard, auth, () => fun))
 
 
@@ -216,7 +216,7 @@ trait CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResp
   def put(re: Regex, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
     dispatcherRegexMap("PUT") = dispatcherRegexMap("PUT") ::: List((re, () => "text/html", () => guard, auth, () => fun))
 
-  def put(re: Regex, mimeType: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
+  def put(re: Regex, mimeType: => String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
     dispatcherRegexMap("PUT") = dispatcherRegexMap("PUT") ::: List((re, () => mimeType, () => guard, auth, () => fun))
 
 
@@ -270,7 +270,7 @@ trait CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResp
   def delete(re: Regex, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
     dispatcherRegexMap("DELETE") = dispatcherRegexMap("DELETE") ::: List((re, () => "text/html", () => guard, auth, () => fun))
 
-  def delete(re: Regex, mimeType: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
+  def delete(re: Regex, mimeType: => String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
     dispatcherRegexMap("DELETE") = dispatcherRegexMap("DELETE") ::: List((re, () => mimeType, () => guard, auth, () => fun))
 
 
@@ -324,7 +324,7 @@ trait CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResp
   def head(re: Regex, guard: => Boolean, auth: (String,Option[String])=>Boolean) =
     dispatcherRegexMap("HEAD") = dispatcherRegexMap("HEAD") ::: List((re, () => "text/html", () => guard, auth, () => ""))
 
-  def head(re: Regex, mimeType: String, guard: => Boolean, auth: (String,Option[String])=>Boolean) =
+  def head(re: Regex, mimeType: => String, guard: => Boolean, auth: (String,Option[String])=>Boolean) =
     dispatcherRegexMap("HEAD") = dispatcherRegexMap("HEAD") ::: List((re, () => mimeType, () => guard, auth, () => ""))
 
 
@@ -378,7 +378,7 @@ trait CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResp
   def options(re: Regex, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
     dispatcherRegexMap("OPTIONS") = dispatcherRegexMap("OPTIONS") ::: List((re, () => "text/html", () => guard, auth, () => fun))
 
-  def options(re: Regex, mimeType: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
+  def options(re: Regex, mimeType: => String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
     dispatcherRegexMap("OPTIONS") = dispatcherRegexMap("OPTIONS") ::: List((re, () => mimeType, () => guard, auth, () => fun))
 
 
@@ -431,7 +431,7 @@ trait CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResp
   def trace(re: Regex, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
     dispatcherRegexMap("TRACE") = dispatcherRegexMap("TRACE") ::: List((re, () => "text/html", () => guard, auth, () => fun))
 
-  def trace(re: Regex, mimeType: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
+  def trace(re: Regex, mimeType: => String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
     dispatcherRegexMap("TRACE") = dispatcherRegexMap("TRACE") ::: List((re, () => mimeType, () => guard, auth, () => fun))
 
 
