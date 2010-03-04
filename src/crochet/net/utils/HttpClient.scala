@@ -1,7 +1,8 @@
 package crochet.net.utils
 
-import org.apache.commons.httpclient.{HttpMethod, HttpStatus, HttpClient => ACHttpClient}
 import org.apache.commons.httpclient.methods._
+import org.apache.commons.httpclient.{UsernamePasswordCredentials, HttpMethod, HttpStatus, HttpClient => ACHttpClient}
+import org.apache.commons.httpclient.auth.AuthScope
 
 /**
  * Network utils to help make testing simpler
@@ -11,10 +12,19 @@ import org.apache.commons.httpclient.methods._
  *
  */
 
-protected class HttpClient(baseURL: String) {
+protected class HttpClient(baseURL: String,credentials:Option[Pair[String,String]]) {
+
+  protected val creds = credentials match {
+    case Some((username,password)) => Some(new UsernamePasswordCredentials(username, password))
+    case None => None
+  }
 
   def get(path:String, header:Map[String,String], params:Map[String,String]):(Int,String) = {
     val hc = new ACHttpClient
+    creds match {
+      case Some(c) => hc.getState().setCredentials(AuthScope.ANY,c)
+      case None =>
+    }
     val gp = params.foldLeft("")((s,t)=>s+"&"+t._1+"="+t._2)
     val fp = if (gp.length>0) baseURL+path.trim+"?"+gp.trim else baseURL+path.trim
     val mt = new GetMethod(fp)
@@ -27,6 +37,10 @@ protected class HttpClient(baseURL: String) {
 
   def post(path:String, header:Map[String,String],params:Map[String,String]):(Int,String) = {
     val hc = new ACHttpClient
+    creds match {
+      case Some(c) => hc.getState().setCredentials(AuthScope.ANY,c)
+      case None =>
+    }
     val mt = new PostMethod(baseURL + path)
     header.foreach ( (t) => mt.addRequestHeader(t._1,t._2) )
     params.foreach ( (t) => mt.addParameter(t._1,t._2) )
@@ -38,6 +52,10 @@ protected class HttpClient(baseURL: String) {
 
   def put(path:String, header:Map[String,String],params:Map[String,String]):(Int,String) = {
     val hc = new ACHttpClient
+    creds match {
+      case Some(c) => hc.getState().setCredentials(AuthScope.ANY,c)
+      case None =>
+    }
     val mt = new PutMethod(baseURL + path)
     header.foreach ( (t) => mt.addRequestHeader(t._1,t._2) )
     val retCode = hc executeMethod mt
@@ -48,6 +66,10 @@ protected class HttpClient(baseURL: String) {
 
   def delete(path:String, header:Map[String,String],params:Map[String,String]):(Int,String) = {
     val hc = new ACHttpClient
+    creds match {
+      case Some(c) => hc.getState().setCredentials(AuthScope.ANY,c)
+      case None =>
+    }
     val mt = new DeleteMethod(baseURL + path)
     header.foreach ( (t) => mt.addRequestHeader(t._1,t._2) )
     val retCode = hc executeMethod mt
@@ -58,6 +80,10 @@ protected class HttpClient(baseURL: String) {
 
   def head(path:String, header:Map[String,String],params:Map[String,String]):Int = {
     val hc = new ACHttpClient
+    creds match {
+      case Some(c) => hc.getState().setCredentials(AuthScope.ANY,c)
+      case None =>
+    }
     val mt = new HeadMethod(baseURL + path)
     header.foreach ( (t) => mt.addRequestHeader(t._1,t._2) )
     val retCode = hc executeMethod mt
@@ -68,6 +94,10 @@ protected class HttpClient(baseURL: String) {
 
   def options(path:String, header:Map[String,String],params:Map[String,String]):(Int,String) = {
     val hc = new ACHttpClient
+    creds match {
+      case Some(c) => hc.getState().setCredentials(AuthScope.ANY,c)
+      case None =>
+    }
     val mt = new OptionsMethod(baseURL + path)
     header.foreach ( (t) => mt.addRequestHeader(t._1,t._2) )
     val retCode = hc executeMethod mt
@@ -79,6 +109,10 @@ protected class HttpClient(baseURL: String) {
 
   def trace(path:String, header:Map[String,String],params:Map[String,String]):(Int,String) = {
     val hc = new ACHttpClient
+    creds match {
+      case Some(c) => hc.getState().setCredentials(AuthScope.ANY,c)
+      case None =>
+    }
     val mt = new TraceMethod(baseURL + path)
     header.foreach ( (t) => mt.addRequestHeader(t._1,t._2) )
     val retCode = hc executeMethod mt
@@ -91,6 +125,8 @@ protected class HttpClient(baseURL: String) {
 
 object HttpClient {
 
-  def apply(protocol: String, host: String, port: Int) = new HttpClient(protocol + "://" + host + ":" + port)
+  def apply(protocol: String, host: String, port: Int) = new HttpClient(protocol + "://" + host + ":" + port,None)
+
+  def apply(protocol: String, host: String, port: Int,user:String,password:String) = new HttpClient(protocol + "://" + host + ":" + port,Some((user,password)))
 
 }
