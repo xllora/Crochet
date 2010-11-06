@@ -10,6 +10,8 @@ class CrochetProject(info: ProjectInfo) extends DefaultProject(info) {
 	lazy val jetty = "org.mortbay.jetty" % "jetty" % "6.1.9"
 	
 	// Testing facilities
-	lazy val specs = "specs" % "specs" % "2.8.0-1.6.5" from "http://code.google.com/p/specs/downloads/detail?name=specs_2.8.0-1.6.5.jar"
+	lazy val scalatest = "org.scalatest" % "scalatest" % "1.0"
+	lazy val scalacheck = "org.scala-tools.testing" % "scalacheck_2.7.7" % "1.6"
+	lazy val specs = "org.scala-tools.testing" % "specs" % "1.6.5" from "http://specs.googlecode.com/files/specs_2.8.0-1.6.5.jar"
 	
 }

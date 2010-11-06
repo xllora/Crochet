@@ -33,7 +33,7 @@ class SimpleHelloWorldSpecs extends Specification {
       // Start a server, pull the content, check the return
       //
       val client = HttpClient("http", "localhost", TEST_PORT)
-      val server = CrochetServer(TEST_PORT,helloWorldService)
+      val server = CrochetServer(TEST_PORT, helloWorldService)
       server.start
       val ret = client.get("/message")
       ret._1 must be equalTo(200)
