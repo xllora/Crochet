@@ -13,13 +13,13 @@ import util.matching.Regex
  * 
  */
 
-protected trait CrochetDispatcher extends HttpServlet with CrochetDynamicEnvironment {
+protected trait CrochetDispatcher extends HttpServlet with CrochetDynamicEnvironment with CrochetResponseCodes {
 
   //
   // The main structures used as dispatchers
   //
   protected var dispatcherMap = MMap[String,MMap[String,(()=>String,()=>Boolean,(String,Option[String])=>Boolean,()=>Any)]]()
-  dispatcherMap ++ List(
+  dispatcherMap ++= List(
     "GET"     -> MMap[String, (() => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),
     "POST"    -> MMap[String, (() => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),
     "PUT"     -> MMap[String, (() => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),
@@ -30,7 +30,7 @@ protected trait CrochetDispatcher extends HttpServlet with CrochetDynamicEnviron
     )
 
   protected var dispatcherRegexMap = MMap[String,List[(Regex,()=>String,()=>Boolean,(String,Option[String])=>Boolean,()=>Any)]]()
-  dispatcherRegexMap ++ List(
+  dispatcherRegexMap ++= List(
     "GET"     -> List[(Regex, () => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),
     "POST"    -> List[(Regex, () => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),
     "PUT"     -> List[(Regex, () => String, () => Boolean, (String,Option[String]) => Boolean, () => Any)](),

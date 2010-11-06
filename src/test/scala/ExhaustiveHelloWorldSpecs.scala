@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletResponse
  *
  */
 
-object ExhaustiveHelloWorldSpecs extends Specification {
+class ExhaustiveHelloWorldSpecs extends Specification {
   
   protected val TEST_PORT = 8080
 
@@ -313,7 +313,7 @@ object ExhaustiveHelloWorldSpecs extends Specification {
       client.head("/re/msg/text") must be equalTo (HttpServletResponse.SC_OK)
       client.head("/re/msg/text/auth") must be equalTo (HttpServletResponse.SC_OK)
       client.head("/re/msg/text/2") must be equalTo (HttpServletResponse.SC_OK)
-      client.head("/re/msg/text/auth/2") must be (HttpServletResponse.SC_OK)
+      client.head("/re/msg/text/auth/2") must be equalTo (HttpServletResponse.SC_OK)
       client.head("/re/msg/html/2") must be equalTo (HttpServletResponse.SC_OK)
       client.head("/re/msg/text/all") must be equalTo (HttpServletResponse.SC_OK)
       client.head("/re/echo/123") must be equalTo (HttpServletResponse.SC_OK)

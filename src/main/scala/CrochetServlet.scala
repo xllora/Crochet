@@ -12,7 +12,7 @@ import util.matching.Regex
  * @date Jan 9, 2010 at 5:13:03 PM
  * 
  */
-trait CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResponseCodes {
+trait CrochetServlet extends CrochetDispatcher {
   
   //
   // Implicit casting
@@ -62,28 +62,28 @@ trait CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResp
   // GET methods
   //
   def get(path: String)(fun: => Any) =
-    dispatcherMap("GET") + (path -> (() => "text/html", () => true, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("GET") += (path -> (() => "text/html", () => true, (a:String,b:Option[String])=>true, () => fun))
 
-  def get(path: String, mimeType: String)(fun: => Any) =
-    dispatcherMap("GET") + (path -> (() => mimeType, () => true, (a:String,b:Option[String])=>true, () => fun))
+  def get(path: String, mimeType: String)(fun: => Any) =  
+    dispatcherMap("GET") += (path -> (() => mimeType, () => true, (a:String,b:Option[String])=>true, () => fun))
 
   def get(path: String, guard: => Boolean)(fun: => Any) =
-    dispatcherMap("GET") + (path -> (() => "text/html", () => guard, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("GET") += (path -> (() => "text/html", () => guard, (a:String,b:Option[String])=>true, () => fun))
 
   def get(path: String, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("GET") + (path -> (() => "text/html", () => true, auth, () => fun))
+    dispatcherMap("GET") += (path -> (() => "text/html", () => true, auth, () => fun))
 
   def get(path: String, mimeType: String, guard: => Boolean)(fun: => Any) =
-    dispatcherMap("GET") + (path -> (() => mimeType, () => guard, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("GET") += (path -> (() => mimeType, () => guard, (a:String,b:Option[String])=>true, () => fun))
 
   def get(path: String, mimeType: String, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("GET") + (path -> (() => mimeType, () => true, auth, () => fun))
+    dispatcherMap("GET") += (path -> (() => mimeType, () => true, auth, () => fun))
 
   def get(path: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("GET") + (path -> (() => "text/html", () => guard, auth, () => fun))
+    dispatcherMap("GET") += (path -> (() => "text/html", () => guard, auth, () => fun))
 
   def get(path: String, mimeType: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("GET") + (path -> (() => mimeType, () => guard, auth, () => fun))
+    dispatcherMap("GET") += (path -> (() => mimeType, () => guard, auth, () => fun))
 
 
   def get(re: Regex)(fun: => Any) =
@@ -117,28 +117,28 @@ trait CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResp
   // POST methods
   //
   def post(path: String)(fun: => Any) =
-    dispatcherMap("POST") + (path -> (() => "text/html", () => true, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("POST") += (path -> (() => "text/html", () => true, (a:String,b:Option[String])=>true, () => fun))
 
   def post(path: String, mimeType: String)(fun: => Any) =
-    dispatcherMap("POST") + (path -> (() => mimeType, () => true, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("POST") += (path -> (() => mimeType, () => true, (a:String,b:Option[String])=>true, () => fun))
 
   def post(path: String, guard: => Boolean)(fun: => Any) =
-    dispatcherMap("POST") + (path -> (() => "text/html", () => guard, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("POST") += (path -> (() => "text/html", () => guard, (a:String,b:Option[String])=>true, () => fun))
 
   def post(path: String, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("POST") + (path -> (() => "text/html", () => true, auth, () => fun))
+    dispatcherMap("POST") += (path -> (() => "text/html", () => true, auth, () => fun))
 
   def post(path: String, mimeType: String, guard: => Boolean)(fun: => Any) =
-    dispatcherMap("POST") + (path -> (() => mimeType, () => guard, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("POST") += (path -> (() => mimeType, () => guard, (a:String,b:Option[String])=>true, () => fun))
 
   def post(path: String, mimeType: String, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-     dispatcherMap("POST") + (path -> (() => mimeType, () => true, auth, () => fun))
+     dispatcherMap("POST") += (path -> (() => mimeType, () => true, auth, () => fun))
 
   def post(path: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("POST") + (path -> (() => "text/html", () => guard, auth, () => fun))
+    dispatcherMap("POST") += (path -> (() => "text/html", () => guard, auth, () => fun))
 
   def post(path: String, mimeType: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("POST") + (path -> (() => mimeType, () => guard, auth, () => fun))
+    dispatcherMap("POST") += (path -> (() => mimeType, () => guard, auth, () => fun))
 
 
   def post(re: Regex)(fun: => Any) =
@@ -171,28 +171,28 @@ trait CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResp
   // PUT methods
   //
   def put(path: String)(fun: => Any) =
-    dispatcherMap("PUT") + (path -> (() => "text/html", () => true, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("PUT") += (path -> (() => "text/html", () => true, (a:String,b:Option[String])=>true, () => fun))
 
   def put(path: String, mimeType: String)(fun: => Any) =
-    dispatcherMap("PUT") + (path -> (() => mimeType, () => true, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("PUT") += (path -> (() => mimeType, () => true, (a:String,b:Option[String])=>true, () => fun))
 
   def put(path: String, guard: => Boolean)(fun: => Any) =
-    dispatcherMap("PUT") + (path -> (() => "text/html", () => guard, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("PUT") += (path -> (() => "text/html", () => guard, (a:String,b:Option[String])=>true, () => fun))
 
   def put(path: String, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("PUT") + (path -> (() => "text/html", () => true, auth, () => fun))
+    dispatcherMap("PUT") += (path -> (() => "text/html", () => true, auth, () => fun))
 
   def put(path: String, mimeType: String, guard: => Boolean)(fun: => Any) =
-    dispatcherMap("PUT") + (path -> (() => mimeType, () => guard, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("PUT") += (path -> (() => mimeType, () => guard, (a:String,b:Option[String])=>true, () => fun))
 
   def put(path: String, mimeType: String, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-     dispatcherMap("PUT") + (path -> (() => mimeType, () => true, auth, () => fun))
+     dispatcherMap("PUT") += (path -> (() => mimeType, () => true, auth, () => fun))
 
   def put(path: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("PUT") + (path -> (() => "text/html", () => guard, auth, () => fun))
+    dispatcherMap("PUT") += (path -> (() => "text/html", () => guard, auth, () => fun))
 
   def put(path: String, mimeType: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("PUT") + (path -> (() => mimeType, () => guard, auth, () => fun))
+    dispatcherMap("PUT") += (path -> (() => mimeType, () => guard, auth, () => fun))
 
 
   def put(re: Regex)(fun: => Any) =
@@ -225,28 +225,28 @@ trait CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResp
   // DELETE methods
   //
   def delete(path: String)(fun: => Any) =
-    dispatcherMap("DELETE") + (path -> (() => "text/html", () => true, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("DELETE") += (path -> (() => "text/html", () => true, (a:String,b:Option[String])=>true, () => fun))
 
   def delete(path: String, mimeType: String)(fun: => Any) =
-    dispatcherMap("DELETE") + (path -> (() => mimeType, () => true, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("DELETE") += (path -> (() => mimeType, () => true, (a:String,b:Option[String])=>true, () => fun))
 
   def delete(path: String, guard: => Boolean)(fun: => Any) =
-    dispatcherMap("DELETE") + (path -> (() => "text/html", () => guard, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("DELETE") += (path -> (() => "text/html", () => guard, (a:String,b:Option[String])=>true, () => fun))
 
   def delete(path: String, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("DELETE") + (path -> (() => "text/html", () => true, auth, () => fun))
+    dispatcherMap("DELETE") += (path -> (() => "text/html", () => true, auth, () => fun))
 
   def delete(path: String, mimeType: String, guard: => Boolean)(fun: => Any) =
-    dispatcherMap("DELETE") + (path -> (() => mimeType, () => guard, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("DELETE") += (path -> (() => mimeType, () => guard, (a:String,b:Option[String])=>true, () => fun))
 
   def delete(path: String, mimeType: String, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-     dispatcherMap("DELETE") + (path -> (() => mimeType, () => true, auth, () => fun))
+     dispatcherMap("DELETE") += (path -> (() => mimeType, () => true, auth, () => fun))
 
   def delete(path: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("DELETE") + (path -> (() => "text/html", () => guard, auth, () => fun))
+    dispatcherMap("DELETE") += (path -> (() => "text/html", () => guard, auth, () => fun))
 
   def delete(path: String, mimeType: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("DELETE") + (path -> (() => mimeType, () => guard, auth, () => fun))
+    dispatcherMap("DELETE") += (path -> (() => mimeType, () => guard, auth, () => fun))
 
 
   def delete(re: Regex)(fun: => Any) =
@@ -279,28 +279,28 @@ trait CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResp
   // HEAD methods
   //
   def head(path: String) =
-    dispatcherMap("HEAD") + (path -> (() => "text/html", () => true, (a:String,b:Option[String])=>true, () => ""))
+    dispatcherMap("HEAD") += (path -> (() => "text/html", () => true, (a:String,b:Option[String])=>true, () => ""))
 
   def head(path: String, mimeType: String) =
-    dispatcherMap("HEAD") + (path -> (() => mimeType, () => true, (a:String,b:Option[String])=>true, () => ""))
+    dispatcherMap("HEAD") += (path -> (() => mimeType, () => true, (a:String,b:Option[String])=>true, () => ""))
 
   def head(path: String, guard: => Boolean) =
-    dispatcherMap("HEAD") + (path -> (() => "text/html", () => guard, (a:String,b:Option[String])=>true, () => ""))
+    dispatcherMap("HEAD") += (path -> (() => "text/html", () => guard, (a:String,b:Option[String])=>true, () => ""))
 
   def head(path: String, auth: (String,Option[String])=>Boolean) =
-    dispatcherMap("HEAD") + (path -> (() => "text/html", () => true, auth, () => ""))
+    dispatcherMap("HEAD") += (path -> (() => "text/html", () => true, auth, () => ""))
 
   def head(path: String, mimeType: String, guard: => Boolean) =
-    dispatcherMap("HEAD") + (path -> (() => mimeType, () => guard, (a:String,b:Option[String])=>true, () => ""))
+    dispatcherMap("HEAD") += (path -> (() => mimeType, () => guard, (a:String,b:Option[String])=>true, () => ""))
 
   def head(path: String, mimeType: String, auth: (String,Option[String])=>Boolean) =
-     dispatcherMap("HEAD") + (path -> (() => mimeType, () => true, auth, () => ""))
+     dispatcherMap("HEAD") += (path -> (() => mimeType, () => true, auth, () => ""))
 
   def head(path: String, guard: => Boolean, auth: (String,Option[String])=>Boolean) =
-    dispatcherMap("HEAD") + (path -> (() => "text/html", () => guard, auth, () => ""))
+    dispatcherMap("HEAD") += (path -> (() => "text/html", () => guard, auth, () => ""))
 
   def head(path: String, mimeType: String, guard: => Boolean, auth: (String,Option[String])=>Boolean) =
-    dispatcherMap("HEAD") + (path -> (() => mimeType, () => guard, auth, () => ""))
+    dispatcherMap("HEAD") += (path -> (() => mimeType, () => guard, auth, () => ""))
 
 
   def head(re: Regex) =
@@ -333,28 +333,28 @@ trait CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResp
   // OPTIONS methods
   //
   def options(path: String)(fun: => Any) =
-    dispatcherMap("OPTIONS") + (path -> (() => "text/html", () => true, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("OPTIONS") += (path -> (() => "text/html", () => true, (a:String,b:Option[String])=>true, () => fun))
 
   def options(path: String, mimeType: String)(fun: => Any) =
-    dispatcherMap("OPTIONS") + (path -> (() => mimeType, () => true, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("OPTIONS") += (path -> (() => mimeType, () => true, (a:String,b:Option[String])=>true, () => fun))
 
   def options(path: String, guard: => Boolean)(fun: => Any) =
-    dispatcherMap("OPTIONS") + (path -> (() => "text/html", () => guard, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("OPTIONS") += (path -> (() => "text/html", () => guard, (a:String,b:Option[String])=>true, () => fun))
 
   def options(path: String, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("OPTIONS") + (path -> (() => "text/html", () => true, auth, () => fun))
+    dispatcherMap("OPTIONS") += (path -> (() => "text/html", () => true, auth, () => fun))
 
   def options(path: String, mimeType: String, guard: => Boolean)(fun: => Any) =
-    dispatcherMap("OPTIONS") + (path -> (() => mimeType, () => guard, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("OPTIONS") += (path -> (() => mimeType, () => guard, (a:String,b:Option[String])=>true, () => fun))
 
   def options(path: String, mimeType: String, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-     dispatcherMap("OPTIONS") + (path -> (() => mimeType, () => true, auth, () => fun))
+     dispatcherMap("OPTIONS") += (path -> (() => mimeType, () => true, auth, () => fun))
 
   def options(path: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("OPTIONS") + (path -> (() => "text/html", () => guard, auth, () => fun))
+    dispatcherMap("OPTIONS") += (path -> (() => "text/html", () => guard, auth, () => fun))
 
   def options(path: String, mimeType: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("OPTIONS") + (path -> (() => mimeType, () => guard, auth, () => fun))
+    dispatcherMap("OPTIONS") += (path -> (() => mimeType, () => guard, auth, () => fun))
 
 
   def options(re: Regex)(fun: => Any) =
@@ -386,28 +386,28 @@ trait CrochetServlet extends HttpServlet with CrochetDispatcher with CrochetResp
   // TRACE methods
   //
   def trace(path: String)(fun: => Any) =
-    dispatcherMap("TRACE") + (path -> (() => "text/html", () => true, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("TRACE") += (path -> (() => "text/html", () => true, (a:String,b:Option[String])=>true, () => fun))
 
   def trace(path: String, mimeType: String)(fun: => Any) =
-    dispatcherMap("TRACE") + (path -> (() => mimeType, () => true, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("TRACE") += (path -> (() => mimeType, () => true, (a:String,b:Option[String])=>true, () => fun))
 
   def trace(path: String, guard: => Boolean)(fun: => Any) =
-    dispatcherMap("TRACE") + (path -> (() => "text/html", () => guard, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("TRACE") += (path -> (() => "text/html", () => guard, (a:String,b:Option[String])=>true, () => fun))
 
   def trace(path: String, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("TRACE") + (path -> (() => "text/html", () => true, auth, () => fun))
+    dispatcherMap("TRACE") += (path -> (() => "text/html", () => true, auth, () => fun))
 
   def trace(path: String, mimeType: String, guard: => Boolean)(fun: => Any) =
-    dispatcherMap("TRACE") + (path -> (() => mimeType, () => guard, (a:String,b:Option[String])=>true, () => fun))
+    dispatcherMap("TRACE") += (path -> (() => mimeType, () => guard, (a:String,b:Option[String])=>true, () => fun))
 
   def trace(path: String, mimeType: String, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-     dispatcherMap("TRACE") + (path -> (() => mimeType, () => true, auth, () => fun))
+     dispatcherMap("TRACE") += (path -> (() => mimeType, () => true, auth, () => fun))
 
   def trace(path: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("TRACE") + (path -> (() => "text/html", () => guard, auth, () => fun))
+    dispatcherMap("TRACE") += (path -> (() => "text/html", () => guard, auth, () => fun))
 
   def trace(path: String, mimeType: String, guard: => Boolean, auth: (String,Option[String])=>Boolean)(fun: => Any) =
-    dispatcherMap("TRACE") + (path -> (() => mimeType, () => guard, auth, () => fun))
+    dispatcherMap("TRACE") += (path -> (() => mimeType, () => guard, auth, () => fun))
 
 
   def trace(re: Regex)(fun: => Any) =
